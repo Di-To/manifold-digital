@@ -1,0 +1,1541 @@
+{
+  "proyecto_id": "11111111-1111-1111-1111-111111111111",
+  "tareas": [
+    {
+      "id_temporal": "T1",
+      "titulo": "CONSTRUCCIÓN COMPLEJO DEPORTIVO SAN GREGORIO, ETAPA 2",
+      "tarea_padre_id_temporal": null,
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T2",
+      "titulo": "Entrega de terreno",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-05-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T3",
+      "titulo": "OBRAS CIVILES",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T4",
+      "titulo": "GASTOS Y OBRAS PRELIMINARES",
+      "tarea_padre_id_temporal": "T3",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T5",
+      "titulo": "Obras Preliminares",
+      "tarea_padre_id_temporal": "T4",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-06-22",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T6",
+      "titulo": "Letrero de obra",
+      "tarea_padre_id_temporal": "T5",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-05-18",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T7",
+      "titulo": "Instalacion de Faenas",
+      "tarea_padre_id_temporal": "T5",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-06-22",
+      "depende_de": ["T6"]
+    },
+    {
+      "id_temporal": "T8",
+      "titulo": "Baños y camarines Personal",
+      "tarea_padre_id_temporal": "T7",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-06-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T11",
+      "titulo": "Aseo y cuidado de la obra",
+      "tarea_padre_id_temporal": "T4",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T12",
+      "titulo": "Aseo de la Obra",
+      "tarea_padre_id_temporal": "T11",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T14",
+      "titulo": "Trabajos Previos",
+      "tarea_padre_id_temporal": "T4",
+      "fecha_inicio": "2026-05-19",
+      "fecha_fin": "2026-07-27",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T15",
+      "titulo": "Despeje del Terreno",
+      "tarea_padre_id_temporal": "T14",
+      "fecha_inicio": "2026-06-02",
+      "fecha_fin": "2026-07-27",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T16",
+      "titulo": "Demoliciones menores",
+      "tarea_padre_id_temporal": "T15",
+      "fecha_inicio": "2026-06-02",
+      "fecha_fin": "2026-07-27",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T19",
+      "titulo": "Trazados",
+      "tarea_padre_id_temporal": "T14",
+      "fecha_inicio": "2026-05-19",
+      "fecha_fin": "2026-06-29",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T20",
+      "titulo": "Trabajos topográficos",
+      "tarea_padre_id_temporal": "T19",
+      "fecha_inicio": "2026-05-19",
+      "fecha_fin": "2026-06-29",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T23",
+      "titulo": "Replanteos",
+      "tarea_padre_id_temporal": "T14",
+      "fecha_inicio": "2026-05-19",
+      "fecha_fin": "2026-07-20",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T24",
+      "titulo": "De excavaciones",
+      "tarea_padre_id_temporal": "T23",
+      "fecha_inicio": "2026-05-19",
+      "fecha_fin": "2026-06-29",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T27",
+      "titulo": "OBRA GRUESA",
+      "tarea_padre_id_temporal": "T3",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T28",
+      "titulo": "Excavaciones y Movimientos de Tierras",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-09-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T29",
+      "titulo": "Rebaje y emparejamiento",
+      "tarea_padre_id_temporal": "T28",
+      "fecha_inicio": "2026-05-12",
+      "fecha_fin": "2026-07-13",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T30",
+      "titulo": "Excavaciones",
+      "tarea_padre_id_temporal": "T28",
+      "fecha_inicio": "2026-06-02",
+      "fecha_fin": "2026-09-14",
+      "depende_de": ["T29"]
+    },
+    {
+      "id_temporal": "T31",
+      "titulo": "Excavaciones para subterráneos",
+      "tarea_padre_id_temporal": "T30",
+      "fecha_inicio": "2026-06-02",
+      "fecha_fin": "2026-08-03",
+      "depende_de": ["T29"]
+    },
+    {
+      "id_temporal": "T36",
+      "titulo": "Fundaciones y Cimientos",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-07-07",
+      "fecha_fin": "2026-08-10",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T37",
+      "titulo": "Emplantillado",
+      "tarea_padre_id_temporal": "T36",
+      "fecha_inicio": "2026-07-07",
+      "fecha_fin": "2026-07-20",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T38",
+      "titulo": "Fundaciones o Cimientos",
+      "tarea_padre_id_temporal": "T36",
+      "fecha_inicio": "2026-07-14",
+      "fecha_fin": "2026-08-10",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T39",
+      "titulo": "Sobrecimientos",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-07-21",
+      "fecha_fin": "2026-08-17",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T40",
+      "titulo": "Sobrecimientos contínuos y aislados",
+      "tarea_padre_id_temporal": "T39",
+      "fecha_inicio": "2026-07-21",
+      "fecha_fin": "2026-08-17",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T42",
+      "titulo": "Bases de Pavimentos",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-07-28",
+      "fecha_fin": "2026-09-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T43",
+      "titulo": "Base estabilizada",
+      "tarea_padre_id_temporal": "T42",
+      "fecha_inicio": "2026-07-28",
+      "fecha_fin": "2026-08-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T45",
+      "titulo": "Radieres de hormigón",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-08-18",
+      "fecha_fin": "2026-09-07",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T46",
+      "titulo": "Radier de 12 cm",
+      "tarea_padre_id_temporal": "T45",
+      "fecha_inicio": "2026-08-18",
+      "fecha_fin": "2026-09-07",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T48",
+      "titulo": "Estructura Resistente",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-07-21",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T49",
+      "titulo": "Materiales Estructurales – Generalidades",
+      "tarea_padre_id_temporal": "T48",
+      "fecha_inicio": "2026-07-21",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T50",
+      "titulo": "Acero",
+      "tarea_padre_id_temporal": "T49",
+      "fecha_inicio": "2026-07-21",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T51",
+      "titulo": "Elementos verticales",
+      "tarea_padre_id_temporal": "T48",
+      "fecha_inicio": "2026-08-18",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T52",
+      "titulo": "Muros de hormigón armado",
+      "tarea_padre_id_temporal": "T51",
+      "fecha_inicio": "2026-08-18",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T58",
+      "titulo": "Elementos horizontales",
+      "tarea_padre_id_temporal": "T48",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T59",
+      "titulo": "Vigas y dinteles de hormigón armado",
+      "tarea_padre_id_temporal": "T58",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T61",
+      "titulo": "Losas de hormigon armado",
+      "tarea_padre_id_temporal": "T58",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T64",
+      "titulo": "Moldajes",
+      "tarea_padre_id_temporal": "T48",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T65",
+      "titulo": "Moldajes Simples con placa industrial",
+      "tarea_padre_id_temporal": "T64",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T67",
+      "titulo": "Elementos Verticales No Soportantes",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T68",
+      "titulo": "Tabiquerías",
+      "tarea_padre_id_temporal": "T67",
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T70",
+      "titulo": "Tabique T01 (seco-seco)",
+      "tarea_padre_id_temporal": null,
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T74",
+      "titulo": "Graderias",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T75",
+      "titulo": "Graderias de hormigon armado",
+      "tarea_padre_id_temporal": "T74",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T76",
+      "titulo": "Escaleras y Rampas",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T77",
+      "titulo": "Escaleras de hormigón armado",
+      "tarea_padre_id_temporal": "T76",
+      "fecha_inicio": "2026-09-15",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T79",
+      "titulo": "Estructura de Techumbre",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2026-11-03",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T80",
+      "titulo": "Cerchas metalicas",
+      "tarea_padre_id_temporal": "T79",
+      "fecha_inicio": "2026-11-03",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T84",
+      "titulo": "Cubiertas",
+      "tarea_padre_id_temporal": "T27",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T85",
+      "titulo": "Bases de Cubiertas",
+      "tarea_padre_id_temporal": "T84",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-10",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T86",
+      "titulo": "Planchas de OSB",
+      "tarea_padre_id_temporal": "T85",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-10",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T87",
+      "titulo": "Cubierta",
+      "tarea_padre_id_temporal": "T84",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-06-07",
+      "depende_de": ["T85"]
+    },
+    {
+      "id_temporal": "T88",
+      "titulo": "Cubierta de acero zincado prepintado al horno PV4",
+      "tarea_padre_id_temporal": "T87",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-06-07",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T89",
+      "titulo": "Elementos Complementarios y Protecciones Hídricas",
+      "tarea_padre_id_temporal": "T84",
+      "fecha_inicio": "2027-05-25",
+      "fecha_fin": "2027-06-21",
+      "depende_de": ["T87"]
+    },
+    {
+      "id_temporal": "T90",
+      "titulo": "Canales",
+      "tarea_padre_id_temporal": "T89",
+      "fecha_inicio": "2027-05-25",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T104",
+      "titulo": "TERMINACIONES",
+      "tarea_padre_id_temporal": "T3",
+      "fecha_inicio": "2026-08-18",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T105",
+      "titulo": "Aislación Térmica",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2026-08-18",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T106",
+      "titulo": "Aislación Térmica Cielo-Cubierta",
+      "tarea_padre_id_temporal": "T105",
+      "fecha_inicio": "2027-03-16",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T107",
+      "titulo": "Lana de Vidrio 120mm 12.5Kg/m3",
+      "tarea_padre_id_temporal": "T106",
+      "fecha_inicio": "2027-03-16",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T110",
+      "titulo": "Revestimientos Exteriores",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-03-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T111",
+      "titulo": "Estucos y Morteros",
+      "tarea_padre_id_temporal": "T110",
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T112",
+      "titulo": "Pasticem",
+      "tarea_padre_id_temporal": "T111",
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T116",
+      "titulo": "Revestimientos Interiores",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-04-26",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T117",
+      "titulo": "Estucos, enlucidos y morteros contínuos",
+      "tarea_padre_id_temporal": "T116",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-03-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T118",
+      "titulo": "Mortero de pega",
+      "tarea_padre_id_temporal": "T117",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-03-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T124",
+      "titulo": "Cielos",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-04-26",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T125",
+      "titulo": "Afinados y Enlucidos Continuos",
+      "tarea_padre_id_temporal": "T124",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-03-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T126",
+      "titulo": "Enrasado y enlucido a yeso",
+      "tarea_padre_id_temporal": "T125",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-03-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T130",
+      "titulo": "Pavimentos",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2026-11-24",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T131",
+      "titulo": "Hormigon visto",
+      "tarea_padre_id_temporal": "T130",
+      "fecha_inicio": "2026-11-24",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T132",
+      "titulo": "Hormigon pulido (circulaciones y bodegas)",
+      "tarea_padre_id_temporal": "T131",
+      "fecha_inicio": "2026-11-24",
+      "fecha_fin": "2027-01-04",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T143",
+      "titulo": "Puertas",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-05-17",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T144",
+      "titulo": "Puertas de Madera",
+      "tarea_padre_id_temporal": "T143",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-05-17",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T145",
+      "titulo": "Puerta simple con manilla y cerradura",
+      "tarea_padre_id_temporal": "T144",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-05-17",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T159",
+      "titulo": "Ventanas",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-06-07",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T160",
+      "titulo": "Ventanas de Aluminio",
+      "tarea_padre_id_temporal": "T159",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-06-07",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T161",
+      "titulo": "Ventanas Fijas (DVH)",
+      "tarea_padre_id_temporal": "T160",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-06-07",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T187",
+      "titulo": "Pinturas y Barnices",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T188",
+      "titulo": "Esmalte",
+      "tarea_padre_id_temporal": "T187",
+      "fecha_inicio": "2027-03-16",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T189",
+      "titulo": "Esmalte al agua muros y tabiques interiores",
+      "tarea_padre_id_temporal": "T188",
+      "fecha_inicio": "2027-04-13",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T196",
+      "titulo": "Pintura anticorrosiva",
+      "tarea_padre_id_temporal": "T187",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T197",
+      "titulo": "Pintura anticorrosiva item",
+      "tarea_padre_id_temporal": "T196",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T200",
+      "titulo": "Artefactos Sanitarios",
+      "tarea_padre_id_temporal": "T104",
+      "fecha_inicio": "2027-06-15",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T201",
+      "titulo": "Lavamanos",
+      "tarea_padre_id_temporal": "T200",
+      "fecha_inicio": "2027-06-15",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T202",
+      "titulo": "Lavamanos suspendido discapacitados",
+      "tarea_padre_id_temporal": "T201",
+      "fecha_inicio": "2027-06-15",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T243",
+      "titulo": "OBRAS COMPLEMENTARIAS",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2026-07-28",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T244",
+      "titulo": "Cierros Exteriores",
+      "tarea_padre_id_temporal": "T243",
+      "fecha_inicio": "2026-07-28",
+      "fecha_fin": "2027-04-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T245",
+      "titulo": "Cierros",
+      "tarea_padre_id_temporal": "T244",
+      "fecha_inicio": "2026-07-28",
+      "fecha_fin": "2027-03-01",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T246",
+      "titulo": "Reja metálica",
+      "tarea_padre_id_temporal": "T245",
+      "fecha_inicio": "2026-08-04",
+      "fecha_fin": "2027-01-18",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T250",
+      "titulo": "Accesos",
+      "tarea_padre_id_temporal": "T244",
+      "fecha_inicio": "2027-03-02",
+      "fecha_fin": "2027-04-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T251",
+      "titulo": "Puerta metalica 1 hoja",
+      "tarea_padre_id_temporal": "T250",
+      "fecha_inicio": "2027-03-02",
+      "fecha_fin": "2027-04-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T255",
+      "titulo": "Pavimentos Exteriores",
+      "tarea_padre_id_temporal": "T243",
+      "fecha_inicio": "2026-12-08",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T256",
+      "titulo": "Dech Timbertech color silver maple (terraza cafeteria)",
+      "tarea_padre_id_temporal": "T255",
+      "fecha_inicio": "2026-12-29",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T259",
+      "titulo": "Pinturas exteriores",
+      "tarea_padre_id_temporal": "T243",
+      "fecha_inicio": "2027-05-04",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T260",
+      "titulo": "Pintura demarcacion estacionamientos",
+      "tarea_padre_id_temporal": "T259",
+      "fecha_inicio": "2027-05-04",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T264",
+      "titulo": "OBRAS DEPORTIVAS EXTERIORES",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T265",
+      "titulo": "Pavimentos deportivos",
+      "tarea_padre_id_temporal": "T264",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T266",
+      "titulo": "Pista atletica de recortan",
+      "tarea_padre_id_temporal": "T265",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T267",
+      "titulo": "Limpieza y despeje del terreno",
+      "tarea_padre_id_temporal": "T266",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T269",
+      "titulo": "Excavaciones y retiro",
+      "tarea_padre_id_temporal": "T266",
+      "fecha_inicio": "2027-02-09",
+      "fecha_fin": "2027-03-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T271",
+      "titulo": "Sub base compactada y perfilada",
+      "tarea_padre_id_temporal": "T266",
+      "fecha_inicio": "2027-03-09",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T275",
+      "titulo": "Carpeta asfaltica 5 cm e imprimacion",
+      "tarea_padre_id_temporal": "T266",
+      "fecha_inicio": "2027-04-20",
+      "fecha_fin": "2027-05-10",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T276",
+      "titulo": "Pista atletica 13 mm sintetica",
+      "tarea_padre_id_temporal": "T266",
+      "fecha_inicio": "2027-05-11",
+      "fecha_fin": "2027-06-14",
+      "depende_de": ["T275"]
+    },
+    {
+      "id_temporal": "T279",
+      "titulo": "Pasto sintetico Pro Play",
+      "tarea_padre_id_temporal": "T265",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T280",
+      "titulo": "Obras Previas e Instalacion de faenas pasto",
+      "tarea_padre_id_temporal": "T279",
+      "fecha_inicio": "2027-01-26",
+      "fecha_fin": "2027-02-22",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T283",
+      "titulo": "Pasto sintetico",
+      "tarea_padre_id_temporal": "T279",
+      "fecha_inicio": "2027-04-20",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T316",
+      "titulo": "INSTALACIONES",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2026-10-13",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T317",
+      "titulo": "ELECTRICIDAD Y CCDD",
+      "tarea_padre_id_temporal": "T316",
+      "fecha_inicio": "2026-11-17",
+      "fecha_fin": "2027-02-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T318",
+      "titulo": "Empalme Electrico",
+      "tarea_padre_id_temporal": "T317",
+      "fecha_inicio": "2026-11-17",
+      "fecha_fin": "2026-12-28",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T320",
+      "titulo": "Tableros Electricos",
+      "tarea_padre_id_temporal": "T317",
+      "fecha_inicio": "2026-11-17",
+      "fecha_fin": "2026-12-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T321",
+      "titulo": "Tableros Generales En Subestaciones",
+      "tarea_padre_id_temporal": "T320",
+      "fecha_inicio": "2026-11-17",
+      "fecha_fin": "2026-12-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T337",
+      "titulo": "CABLEADO ESTRUCTURADO",
+      "tarea_padre_id_temporal": "T316",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-05-31",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T338",
+      "titulo": "Componentes cableado",
+      "tarea_padre_id_temporal": "T337",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-05-31",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T339",
+      "titulo": "Area de Trabajo",
+      "tarea_padre_id_temporal": "T338",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-02-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T340",
+      "titulo": "Oulet",
+      "tarea_padre_id_temporal": "T339",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-02-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T370",
+      "titulo": "ILUMINACION",
+      "tarea_padre_id_temporal": "T316",
+      "fecha_inicio": "2027-03-30",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T371",
+      "titulo": "Equipo auto energizado sobrepuesto",
+      "tarea_padre_id_temporal": "T370",
+      "fecha_inicio": "2027-03-30",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T372",
+      "titulo": "Equipo hermético lineal adosado al cielo Led 25W 4000K",
+      "tarea_padre_id_temporal": "T370",
+      "fecha_inicio": "2027-03-30",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T401",
+      "titulo": "SANITARIO",
+      "tarea_padre_id_temporal": "T316",
+      "fecha_inicio": "2026-10-13",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T402",
+      "titulo": "AGUA POTABLE FRIA",
+      "tarea_padre_id_temporal": "T401",
+      "fecha_inicio": "2026-12-22",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T403",
+      "titulo": "Movimiento de tierras agua fria",
+      "tarea_padre_id_temporal": "T402",
+      "fecha_inicio": "2026-12-22",
+      "fecha_fin": "2027-02-01",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T404",
+      "titulo": "Excavacion agua fria",
+      "tarea_padre_id_temporal": "T403",
+      "fecha_inicio": "2026-12-22",
+      "fecha_fin": "2027-01-18",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T407",
+      "titulo": "Cañerias agua fria",
+      "tarea_padre_id_temporal": "T402",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T408",
+      "titulo": "Tuberia HDPE PN10 110 mm",
+      "tarea_padre_id_temporal": "T407",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T430",
+      "titulo": "AGUA CALIENTE",
+      "tarea_padre_id_temporal": "T401",
+      "fecha_inicio": "2026-10-13",
+      "fecha_fin": "2027-04-12",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T431",
+      "titulo": "Cañerias agua caliente",
+      "tarea_padre_id_temporal": "T430",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T432",
+      "titulo": "Cañeria Cu 25 mm caliente",
+      "tarea_padre_id_temporal": "T431",
+      "fecha_inicio": "2027-01-05",
+      "fecha_fin": "2027-02-08",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T457",
+      "titulo": "ALCANTARILLADO",
+      "tarea_padre_id_temporal": "T401",
+      "fecha_inicio": "2026-10-13",
+      "fecha_fin": "2027-04-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T458",
+      "titulo": "Union domiciliaria",
+      "tarea_padre_id_temporal": "T457",
+      "fecha_inicio": "2026-10-13",
+      "fecha_fin": "2026-12-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T460",
+      "titulo": "Movimiento de tierras alcantarillado",
+      "tarea_padre_id_temporal": "T457",
+      "fecha_inicio": "2026-11-03",
+      "fecha_fin": "2026-12-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T461",
+      "titulo": "Excavacion alcantarillado",
+      "tarea_padre_id_temporal": "T460",
+      "fecha_inicio": "2026-11-03",
+      "fecha_fin": "2026-11-30",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T485",
+      "titulo": "CLIMA",
+      "tarea_padre_id_temporal": "T316",
+      "fecha_inicio": "2027-03-30",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T486",
+      "titulo": "Equipos clima",
+      "tarea_padre_id_temporal": "T485",
+      "fecha_inicio": "2027-03-30",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T487",
+      "titulo": "Chiller-01 Bomba Calor",
+      "tarea_padre_id_temporal": "T486",
+      "fecha_inicio": "2027-03-30",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T515",
+      "titulo": "PAVIMENTACION Y AGUAS LLUVIAS",
+      "tarea_padre_id_temporal": "T316",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-04-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T516",
+      "titulo": "Obras Civiles pavimentacion",
+      "tarea_padre_id_temporal": "T515",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-03-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T517",
+      "titulo": "Movimiento de tierras pavimentacion",
+      "tarea_padre_id_temporal": "T516",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-03-15",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T518",
+      "titulo": "Excavaciones (Escarpe)",
+      "tarea_padre_id_temporal": "T517",
+      "fecha_inicio": "2027-01-19",
+      "fecha_fin": "2027-02-22",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T541",
+      "titulo": "AGUAS LLUVIAS",
+      "tarea_padre_id_temporal": "T515",
+      "fecha_inicio": "2027-02-23",
+      "fecha_fin": "2027-05-10",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T542",
+      "titulo": "Obras Civiles aguas lluvias",
+      "tarea_padre_id_temporal": "T541",
+      "fecha_inicio": "2027-02-23",
+      "fecha_fin": "2027-04-19",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T543",
+      "titulo": "Movimiento de Tierras aguas lluvias",
+      "tarea_padre_id_temporal": "T542",
+      "fecha_inicio": "2027-02-23",
+      "fecha_fin": "2027-04-19",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T544",
+      "titulo": "Excavacion para Drenes",
+      "tarea_padre_id_temporal": "T543",
+      "fecha_inicio": "2027-02-23",
+      "fecha_fin": "2027-03-29",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T572",
+      "titulo": "PAISAJISMO",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T573",
+      "titulo": "Obras Preliminares paisajismo",
+      "tarea_padre_id_temporal": "T572",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-17",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T574",
+      "titulo": "Instalación de faenas paisajismo",
+      "tarea_padre_id_temporal": "T573",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-03",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T576",
+      "titulo": "Preparacion de suelo",
+      "tarea_padre_id_temporal": "T572",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T577",
+      "titulo": "Preparacion del suelo para pavimentos",
+      "tarea_padre_id_temporal": "T576",
+      "fecha_inicio": "2027-04-27",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T583",
+      "titulo": "Rellenos paisajismo",
+      "tarea_padre_id_temporal": "T572",
+      "fecha_inicio": "2027-05-11",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T584",
+      "titulo": "Rellenos jardinera sobre nivel",
+      "tarea_padre_id_temporal": "T583",
+      "fecha_inicio": "2027-05-11",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T591",
+      "titulo": "Especies Vegetales",
+      "tarea_padre_id_temporal": "T572",
+      "fecha_inicio": "2027-05-04",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T592",
+      "titulo": "Suministro de Arboles",
+      "tarea_padre_id_temporal": "T591",
+      "fecha_inicio": "2027-05-25",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T593",
+      "titulo": "Celtis australis (Almez - 2m)",
+      "tarea_padre_id_temporal": "T592",
+      "fecha_inicio": "2027-05-25",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T631",
+      "titulo": "Cesped",
+      "tarea_padre_id_temporal": "T572",
+      "fecha_inicio": "2027-05-04",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T632",
+      "titulo": "Suministro de cesped",
+      "tarea_padre_id_temporal": "T631",
+      "fecha_inicio": "2027-05-04",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T633",
+      "titulo": "Instalacion de Cesped",
+      "tarea_padre_id_temporal": "T631",
+      "fecha_inicio": "2027-05-04",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T643",
+      "titulo": "RIEGO",
+      "tarea_padre_id_temporal": "T572",
+      "fecha_inicio": "2027-04-13",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T644",
+      "titulo": "Sistemas de irrigacion",
+      "tarea_padre_id_temporal": "T643",
+      "fecha_inicio": "2027-04-13",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T645",
+      "titulo": "Programador ACC",
+      "tarea_padre_id_temporal": "T644",
+      "fecha_inicio": "2027-04-13",
+      "fecha_fin": "2027-07-05",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T666",
+      "titulo": "SEGURIDAD",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-04-20",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T667",
+      "titulo": "Sistema de Seguridad contra Incendio",
+      "tarea_padre_id_temporal": "T666",
+      "fecha_inicio": "2027-04-20",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T668",
+      "titulo": "Sistema de Deteccion de Incendios",
+      "tarea_padre_id_temporal": "T667",
+      "fecha_inicio": "2027-04-20",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T669",
+      "titulo": "Detectores",
+      "tarea_padre_id_temporal": "T668",
+      "fecha_inicio": "2027-04-20",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T697",
+      "titulo": "SEÑALETICA",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-05-18",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T698",
+      "titulo": "Subterraneo señaletica",
+      "tarea_padre_id_temporal": "T697",
+      "fecha_inicio": "2027-05-18",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T699",
+      "titulo": "Número de piso en escalera subterraneo",
+      "tarea_padre_id_temporal": "T698",
+      "fecha_inicio": "2027-05-18",
+      "fecha_fin": "2027-06-14",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T728",
+      "titulo": "BASURAS",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-06-01",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T729",
+      "titulo": "Repisa",
+      "tarea_padre_id_temporal": "T728",
+      "fecha_inicio": "2027-06-01",
+      "fecha_fin": "2027-06-21",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T736",
+      "titulo": "DRENAJE CANCHA",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T737",
+      "titulo": "Movimiento de Tierras drenaje",
+      "tarea_padre_id_temporal": "T736",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T738",
+      "titulo": "Excavacion drenaje",
+      "tarea_padre_id_temporal": "T737",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T741",
+      "titulo": "Tuberias drenaje",
+      "tarea_padre_id_temporal": "T736",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T742",
+      "titulo": "Tub. PVC Sanit. 160 mm drenaje",
+      "tarea_padre_id_temporal": "T741",
+      "fecha_inicio": "2027-04-06",
+      "fecha_fin": "2027-05-24",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T754",
+      "titulo": "EQUIPAMIENTO",
+      "tarea_padre_id_temporal": "T1",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T755",
+      "titulo": "ESTADIO equipamiento",
+      "tarea_padre_id_temporal": "T754",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T756",
+      "titulo": "Futbol",
+      "tarea_padre_id_temporal": "T755",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T757",
+      "titulo": "Balones de futbol",
+      "tarea_padre_id_temporal": "T756",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T797",
+      "titulo": "MULTICANCHAS",
+      "tarea_padre_id_temporal": "T754",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T798",
+      "titulo": "Tenis",
+      "tarea_padre_id_temporal": "T797",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T799",
+      "titulo": "Sistema de tenis simple",
+      "tarea_padre_id_temporal": "T798",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T809",
+      "titulo": "CAMARINES equipamiento",
+      "tarea_padre_id_temporal": "T754",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T810",
+      "titulo": "Camarines 1, 2, 3 y 4",
+      "tarea_padre_id_temporal": "T809",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T811",
+      "titulo": "Banca madera barnizada estructura metalica 30x30mm camarines",
+      "tarea_padre_id_temporal": "T810",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T820",
+      "titulo": "ADMINISTRACION equipamiento",
+      "tarea_padre_id_temporal": "T754",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T821",
+      "titulo": "Recepcion Administracion",
+      "tarea_padre_id_temporal": "T820",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T822",
+      "titulo": "Computador Dell Inspiron recepcion",
+      "tarea_padre_id_temporal": "T821",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T937",
+      "titulo": "EQUIPOS",
+      "tarea_padre_id_temporal": "T754",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T938",
+      "titulo": "ESTADIO equipos",
+      "tarea_padre_id_temporal": "T937",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T939",
+      "titulo": "Marcador Electronico FB9",
+      "tarea_padre_id_temporal": "T938",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T947",
+      "titulo": "EQUIPOS INTERIOR EDIFICIO",
+      "tarea_padre_id_temporal": "T937",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    },
+    {
+      "id_temporal": "T948",
+      "titulo": "Camaras de Seguridad interior",
+      "tarea_padre_id_temporal": "T947",
+      "fecha_inicio": "2027-05-24",
+      "fecha_fin": "2027-07-02",
+      "depende_de": []
+    }
+  ]
+}
