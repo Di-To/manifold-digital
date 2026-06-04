@@ -164,4 +164,4 @@ class ContractApp {
 
 const newContract = Object.assign({}, new ContractApp());
 
-console.log(JSON.parse(JSON.stringify(newContract)));
+// console.log(JSON.parse(JSON.stringify(newContract)));
