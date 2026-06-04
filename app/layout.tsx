@@ -1,6 +1,7 @@
 import { AuthProvider } from '@/hooks/userAuth';
 import '@/app/globals.css';
 
+//
 export const metadata = {
   title: 'Manifold Digital',
   description: 'Sistema de Gestión de Inspecciones e Incidencias',
