@@ -40,6 +40,13 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export default function EditarProyectoPage() {
+  // Add this state at the top of EditarProyectoPage:
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{
+    ok: boolean;
+    message: string;
+  } | null>(null);
+
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
@@ -64,6 +71,46 @@ export default function EditarProyectoPage() {
       .catch((e) => setFetchError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    const input = e.target;
+    if (!file) return;
+
+    setImporting(true);
+    setImportResult(null);
+
+    try {
+      const text = await file.text();
+      const payload = JSON.parse(text);
+
+      // override proyecto_id with the current project id
+      payload.proyecto_id = id;
+
+      const res = await fetch("/api/import-tareas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error ?? "Error al importar");
+      setImportResult({
+        ok: true,
+        message: `${data.count} tareas importadas correctamente.`,
+      });
+    } catch (err) {
+      setImportResult({
+        ok: false,
+        message: err instanceof Error ? err.message : "Error desconocido",
+      });
+    } finally {
+      setImporting(false);
+      // reset the input so the same file can be re-uploaded if needed
+      input.value = "";
+    }
+  }
 
   function update(field: keyof FormState, value: string) {
     setForm((prev) => (prev ? { ...prev, [field]: value } : prev));
@@ -253,6 +300,51 @@ export default function EditarProyectoPage() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* JSON Import */}
+          <div className="border-t border-gray-100 pt-6">
+            <p className="text-sm font-medium text-gray-700 mb-1">
+              Importar tareas desde JSON
+              <span className="ml-1 text-xs text-gray-400 font-normal">
+                (opcional)
+              </span>
+            </p>
+            <p className="text-xs text-gray-400 mb-3">
+              Sube un archivo JSON con el formato de tareas para poblar este
+              proyecto. Las tareas existentes no se eliminan.
+            </p>
+
+            <label
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-sm cursor-pointer transition-colors
+    ${
+      importing
+        ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+        : "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+    }`}
+            >
+              <input
+                type="file"
+                accept=".json"
+                disabled={importing}
+                onChange={handleImport}
+                className="sr-only"
+              />
+              {importing ? "Importando..." : "Seleccionar archivo .json"}
+            </label>
+
+            {importResult && (
+              <div
+                className={`mt-3 rounded-lg px-4 py-3 text-sm border
+      ${
+        importResult.ok
+          ? "bg-green-50 border-green-200 text-green-700"
+          : "bg-red-50 border-red-200 text-red-700"
+      }`}
+              >
+                {importResult.message}
+              </div>
+            )}
           </div>
 
           {/* Server error */}
