@@ -570,24 +570,40 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
       filtered.length - 1 - Math.floor(my / (LANE_H + LANE_PADDING));
 
     if (laneI < 0 || laneI >= filtered.length) {
-      setExpanded(null);
+      // click outside — close overlay and re-collapse expanded node
+      if (expanded) {
+        setCollapsed((prev) => {
+          const next = new Set(prev);
+          next.add(expanded);
+          return next;
+        });
+        setExpanded(null);
+      }
       return;
     }
 
     const task = filtered[laneI];
     if (!isGroup(task, tasks)) return;
 
-    // toggle tree collapse
-    setCollapsed((prev) => {
-      const next = new Set(prev);
-      if (next.has(task.id)) next.delete(task.id);
-      else next.add(task.id);
-      return next;
-    });
-
-    // open overlay
-    setExpanded(task.id === expanded ? null : task.id);
-    setExpandedPos({ x: e.clientX, y: e.clientY });
+    if (task.id === expanded) {
+      // same node — close and re-collapse
+      setCollapsed((prev) => {
+        const next = new Set(prev);
+        next.add(task.id);
+        return next;
+      });
+      setExpanded(null);
+    } else {
+      // new node — collapse previous if any, expand new one
+      setCollapsed((prev) => {
+        const next = new Set(prev);
+        if (expanded) next.add(expanded); // re-collapse previous
+        next.delete(task.id); // expand new
+        return next;
+      });
+      setExpanded(task.id);
+      setExpandedPos({ x: e.clientX, y: e.clientY });
+    }
   }
 
   // tooltip on mousemove
@@ -800,12 +816,12 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
           width: "100%",
           overflowX: "auto",
           overflowY: "auto",
-          maxHeight: "60vh",
+          height: "60vh", // ← fixed, not max
           position: "relative",
-          padding: "0 24px", // ← add this
-          boxSizing: "border-box", // ← add this so padding doesn't expand width
+          padding: "0 24px",
+          boxSizing: "border-box",
           display: "flex",
-          flexDirection: "column-reverse", // ← anchor bottom
+          // flexDirection: "column-reverse",
         }}
       >
         {W > 0 && (
