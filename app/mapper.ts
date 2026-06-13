@@ -1,8 +1,13 @@
-import { RoleTypes } from './data-structure'
-import { SeverityIncidents } from './data-structure'
-import { DependencyTypes } from './data-structure'
+import { RoleTypes, SeverityIncidents, DependencyTypes, ProjectStatusTypes, TaskStatusTypes, IncidentsStatusTypes } from './data-structure';
 
-export const userMapper = {
+export interface RolePermissionConfig {
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+    availableSeverityIncidents: SeverityIncidents[];
+}
+
+export const userRoleConfig: Record<RoleTypes, RolePermissionConfig> = {
     [RoleTypes.Gerente]: {
         create: true,
         edit: true,
@@ -11,7 +16,7 @@ export const userMapper = {
             SeverityIncidents.Baja,
             SeverityIncidents.Media,
             SeverityIncidents.Alta,
-            SeverityIncidents.Alta
+            SeverityIncidents.Critica
         ]
     },
     [RoleTypes.Jefe_Obra]: {
@@ -32,10 +37,30 @@ export const userMapper = {
             SeverityIncidents.Baja,
             SeverityIncidents.Media
         ]
-    },
-}
+    }
+};
 
-export const dependencyTypesMapper = {
+export const dependencyTypesLabel: Record<DependencyTypes, string> = {
     [DependencyTypes.Fin_a_inicio]: 'Fin a Inicio',
     [DependencyTypes.Sin_dependencia]: 'Sin Dependencia'
-}
+};
+
+export const projectStatusLabel: Record<ProjectStatusTypes, string> = {
+    [ProjectStatusTypes.Planificacion]: "Planificación",
+    [ProjectStatusTypes.Activo]: "Activo",
+    [ProjectStatusTypes.Pausado]: "Pausado",
+    [ProjectStatusTypes.Finalizado]: "Finalizado",
+};
+
+export const taskStatusLabel: Record<TaskStatusTypes, string> = {
+    [TaskStatusTypes.Pendiente]: "Pendiente",
+    [TaskStatusTypes.En_Curso]: "En Curso",
+    [TaskStatusTypes.Completada]: "Completada",
+    [TaskStatusTypes.Bloqueada]: "Bloqueada",
+};
+
+export const incidentStatusLabel: Record<IncidentsStatusTypes, string> = {
+    [IncidentsStatusTypes.Abierta]: "Abierta",
+    [IncidentsStatusTypes.En_Revision]: "En Revisión",
+    [IncidentsStatusTypes.Resuelta]: "Resuelta",
+};

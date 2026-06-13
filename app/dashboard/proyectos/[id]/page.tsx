@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import ProjectTimeline, { type GanttTask } from "@/components/ProjectTimeline";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,9 +46,10 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function ProyectoDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<GanttTask[]>([]);
@@ -56,6 +58,12 @@ export default function ProyectoDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -90,7 +98,7 @@ export default function ProyectoDetailPage() {
         setError(tareasErr.message);
         return;
       }
-      if (!tareasData?.length) return;
+      //if (!tareasData?.length) return;
 
       // dependencies
       const tareaIds = tareasData.map((t) => t.id);
@@ -99,8 +107,20 @@ export default function ProyectoDetailPage() {
         .select("tarea_id, depende_de_tarea_id")
         .in("tarea_id", tareaIds);
 
-      setTasks(
+      /*setTasks(
         tareasData.map((t) => ({
+          id: t.id,
+          titulo: t.titulo,
+          tarea_padre_id: t.tarea_padre_id,
+          fecha_inicio_planificada: t.fecha_inicio_planificada,
+          fecha_fin_planificada: t.fecha_fin_planificada,
+          estado: t.estado ?? "Pendiente",
+          porcentaje_avance_actual: t.porcentaje_avance_actual ?? 0,
+        })),
+      );*/
+
+      setTasks(
+        (tareasData ?? []).map((t) => ({
           id: t.id,
           titulo: t.titulo,
           tarea_padre_id: t.tarea_padre_id,
@@ -120,11 +140,11 @@ export default function ProyectoDetailPage() {
     }
 
     load().finally(() => setLoading(false));
-  }, [id]);
+  }, [id, user, authLoading, router]);
 
   // ── loading / error ──────────────────────────────────────────────────────
 
-  if (loading)
+  if (authLoading || loading)
     return (
       <div
         style={{
@@ -157,7 +177,7 @@ export default function ProyectoDetailPage() {
           {error ?? "Proyecto no encontrado"}
         </p>
         <Link
-          href="/proyectos"
+          href="/dashboard/proyectos"
           style={{ fontSize: 12, color: "var(--color-text-info)" }}
         >
           ← Volver a proyectos
@@ -177,19 +197,19 @@ export default function ProyectoDetailPage() {
   const duracionTotal =
     project.fecha_inicio_planificada && project.fecha_fin_planificada
       ? diffDays(
-          project.fecha_inicio_planificada,
-          project.fecha_fin_planificada,
-        )
+        project.fecha_inicio_planificada,
+        project.fecha_fin_planificada,
+      )
       : null;
 
   const diasTranscurridos = project.fecha_inicio_planificada
     ? Math.max(
-        0,
-        diffDays(
-          project.fecha_inicio_planificada,
-          new Date().toISOString().slice(0, 10),
-        ),
-      )
+      0,
+      diffDays(
+        project.fecha_inicio_planificada,
+        new Date().toISOString().slice(0, 10),
+      ),
+    )
     : null;
 
   const pctTiempo =
@@ -225,7 +245,7 @@ export default function ProyectoDetailPage() {
         }}
       >
         <Link
-          href="/proyectos"
+          href="/dashboard/proyectos"
           style={{
             fontSize: 11,
             color: "var(--color-text-tertiary)",
@@ -249,7 +269,7 @@ export default function ProyectoDetailPage() {
         </span>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
           <Link
-            href={`/proyectos/${id}/editar`}
+            href={`/dashboard/proyectos/${id}/editar`}
             style={{
               fontSize: 10,
               padding: "4px 10px",
@@ -472,7 +492,7 @@ export default function ProyectoDetailPage() {
                   No hay tareas importadas.
                 </p>
                 <Link
-                  href={`/proyectos/${id}/editar`}
+                  href={`/dashboard/proyectos/${id}/editar`}
                   style={{ fontSize: 11, color: "var(--color-text-info)" }}
                 >
                   Importar tareas →

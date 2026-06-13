@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createProyecto, type ProjectStatus } from "@/services/proyectos";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Swap for real session empresa_id once auth is ready ──────────────────────
-const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
+// const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: "Planificacion", label: "Planificación" },
@@ -43,6 +44,7 @@ export default function NuevoProyectoPage() {
   >({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   function update(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -73,19 +75,23 @@ export default function NuevoProyectoPage() {
 
   async function handleSubmit() {
     if (!validate()) return;
+    if (!user?.companyId || user.companyId === 'NOT_ASSIGN') {
+      setServerError("Tu cuenta de usuario no tiene una empresa válida asignada para crear proyectos.");
+      return;
+    }
     setSubmitting(true);
     setServerError(null);
 
     try {
       await createProyecto({
-        empresa_id: EMPRESA_ID,
+        empresa_id: user.companyId,
         nombre: form.nombre.trim(),
         descripcion: form.descripcion.trim() || undefined,
         fecha_inicio_planificada: form.fecha_inicio_planificada,
         fecha_fin_planificada: form.fecha_fin_planificada,
         estado: form.estado,
       });
-      router.push("/proyectos");
+      router.push("/dashboard/proyectos");
     } catch (e: unknown) {
       setServerError(
         e instanceof Error ? e.message : "Error al crear el proyecto.",
@@ -100,7 +106,7 @@ export default function NuevoProyectoPage() {
         {/* Header */}
         <div className="mb-8">
           <Link
-            href="/proyectos"
+            href="/dashboard/proyectos"
             className="text-xs text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-flex items-center gap-1"
           >
             ← Volver a proyectos
@@ -214,7 +220,7 @@ export default function NuevoProyectoPage() {
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-2">
             <Link
-              href="/proyectos"
+              href="/dashboard/proyectos"
               className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
               Cancelar
