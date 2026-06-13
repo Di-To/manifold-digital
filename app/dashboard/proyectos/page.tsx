@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 import {
   getProyectos,
   type Project,
@@ -8,7 +9,7 @@ import {
 } from "@/services/proyectos";
 
 // ─── Swap for real session empresa_id once auth is ready ──────────────────────
-const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
+// const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   Planificacion: "Planificación",
@@ -34,15 +35,13 @@ function formatDate(dateStr?: string) {
 
 function StatusBadge({ status }: { status: ProjectStatus }) {
   const styles: Record<ProjectStatus, string> = {
-    Activo: "bg-emerald-100 text-emerald-800",
-    Planificacion: "bg-blue-100 text-blue-800",
-    Pausado: "bg-amber-100 text-amber-800",
-    Finalizado: "bg-gray-100 text-gray-600",
+    Activo: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    Planificacion: "bg-blue-100 text-blue-800 border-blue-200",
+    Pausado: "bg-amber-100 text-amber-800 border-amber-200",
+    Finalizado: "bg-slate-100 text-slate-600 border-slate-200",
   };
   return (
-    <span
-      className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${styles[status]}`}
-    >
+    <span className={`inline-block px-2 py-0.5 rounded-lg border text-xs font-semibold ${styles[status]}`}>
       {STATUS_LABELS[status]}
     </span>
   );
@@ -104,7 +103,7 @@ function ProjectGroup({
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link
-                      href={`/proyectos/${p.id}`}
+                      href={`/dashboard/proyectos/${p.id}`}
                       className="inline-block px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
                     >
                       Ver
@@ -120,17 +119,48 @@ function ProjectGroup({
   );
 }
 
-export default function ProyectosPage() {
+/* export default function ProyectosPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     getProyectos(EMPRESA_ID)
       .then(setProjects)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, []);*/
+
+export default function ProyectosPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    const empresaId = user?.companyId;
+    if (!empresaId || empresaId === 'NOT_ASSIGN') {
+      setError("No se encontró una empresa válida vinculada a tu cuenta.");
+      setLoading(false);
+      return;
+    }
+
+    getProyectos(empresaId)
+      .then(setProjects)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [user, authLoading]);
+
+  if (authLoading || loading) {
+    return (
+      <div className="text-center py-20 text-slate-400 text-xs font-bold animate-pulse uppercase tracking-wider">
+        Cargando listado de proyectos...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -146,7 +176,7 @@ export default function ProyectosPage() {
             </h1>
           </div>
           <Link
-            href="/proyectos/nuevo"
+            href="/dashboard/proyectos/nuevo"
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
             <span className="text-lg leading-none">+</span>
@@ -171,7 +201,7 @@ export default function ProyectosPage() {
           <div className="text-center py-20 text-gray-400 text-sm">
             No hay proyectos aún.{" "}
             <Link
-              href="/proyectos/nuevo"
+              href="/dashboard/proyectos/nuevo"
               className="text-blue-600 hover:underline"
             >
               Crear el primero

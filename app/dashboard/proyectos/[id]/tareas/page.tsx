@@ -91,7 +91,7 @@ export default function TareasPage() {
           {error}
         </p>
         <Link
-          href={`/proyectos/${id}`}
+          href={`/dashboard/proyectos/${id}`}
           style={{ fontSize: 12, color: "var(--color-text-info)" }}
         >
           ← Volver al proyecto
@@ -114,7 +114,7 @@ export default function TareasPage() {
         }}
       >
         <Link
-          href={`/proyectos/${id}`}
+          href={`/dashboard/proyectos/${id}`}
           style={{
             fontSize: 11,
             color: "var(--color-text-tertiary)",

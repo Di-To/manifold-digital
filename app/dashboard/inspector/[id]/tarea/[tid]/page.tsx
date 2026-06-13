@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Swap for real session once auth lands ────────────────────────────────────
-const USUARIO_ID = "a1111111-1111-1111-1111-111111111111";
+// const USUARIO_ID = "a1111111-1111-1111-1111-111111111111";
 
 type EstadoTarea = "Completada" | "Pendiente" | "En_Curso" | "Bloqueada";
 type Gravedad = "Baja" | "Media" | "Alta" | "Critica";
@@ -25,25 +26,25 @@ const ESTADO_OPTIONS: {
   color: string;
   description: string;
 }[] = [
-  {
-    value: "Completada",
-    label: "Aprobada",
-    color: "#0F6E56",
-    description: "Tarea completada y verificada",
-  },
-  {
-    value: "En_Curso",
-    label: "Sin revisar",
-    color: "#378ADD",
-    description: "En progreso, sin revisión final",
-  },
-  {
-    value: "Bloqueada",
-    label: "Bloqueada",
-    color: "#993C1D",
-    description: "Impedimento activo, requiere atención",
-  },
-];
+    {
+      value: "Completada",
+      label: "Aprobada",
+      color: "#0F6E56",
+      description: "Tarea completada y verificada",
+    },
+    {
+      value: "En_Curso",
+      label: "Sin revisar",
+      color: "#378ADD",
+      description: "En progreso, sin revisión final",
+    },
+    {
+      value: "Bloqueada",
+      label: "Bloqueada",
+      color: "#993C1D",
+      description: "Impedimento activo, requiere atención",
+    },
+  ];
 
 const GRAVEDAD_OPTIONS: { value: Gravedad; label: string; color: string }[] = [
   { value: "Baja", label: "Baja", color: "#378ADD" },
@@ -67,6 +68,7 @@ function diffDays(a: string, b: string): number {
 export default function InspectorTareaPage() {
   const { id, tid } = useParams<{ id: string; tid: string }>();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
@@ -131,7 +133,7 @@ export default function InspectorTareaPage() {
       .from("reportes_avance")
       .insert({
         tarea_id: task.id,
-        usuario_id: USUARIO_ID,
+        usuario_id: user?.id,
         porcentaje_reportado: pct,
         comentarios: comentario.trim() || null,
         url_evidencia: urlEvidencia.trim() || null,
@@ -163,7 +165,7 @@ export default function InspectorTareaPage() {
       const { error: incErr } = await supabase.from("incidencias").insert({
         proyecto_id: id,
         tarea_id: task.id,
-        reportado_por: USUARIO_ID,
+        reportado_por: user?.id,
         tipo_incidencia: "Bloqueo",
         gravedad,
         descripcion: descIncidencia.trim(),
@@ -178,12 +180,13 @@ export default function InspectorTareaPage() {
     }
 
     setSuccess(true);
-    setTimeout(() => router.push(`/inspector/${id}`), 1500);
+    setTimeout(() => router.push(`/dashboard/inspector/${id}`), 1500);
   }
 
   // ── loading / error ──────────────────────────────────────────────────────
 
-  if (loading) return <div style={centered}>Cargando tarea...</div>;
+  if (authLoading || loading) return <div style={centered}>Cargando tarea y sesión...</div>;
+  if (!user) return <div style={centered}>No autorizado. Por favor inicia sesión.</div>;
 
   if (error && !task)
     return (
@@ -212,7 +215,7 @@ export default function InspectorTareaPage() {
       {/* top bar */}
       <div style={topBar}>
         <Link
-          href={`/inspector/${id}`}
+          href={`/dashboard/inspector/${id}`}
           style={{
             fontSize: 11,
             color: "var(--color-text-tertiary)",

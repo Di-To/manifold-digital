@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Swap for real session once auth lands ────────────────────────────────────
-const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
+// const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
 
 interface Project {
   id: string;
@@ -39,8 +40,18 @@ export default function InspectorPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
+    if (authLoading) return;
+
+    const empresaId = user?.companyId;
+    if (!empresaId || empresaId === 'NOT_ASSIGN') {
+      setError("No se encontró una empresa válida vinculada a tu cuenta.");
+      setLoading(false);
+      return;
+    }
+
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -51,17 +62,17 @@ export default function InspectorPage() {
       .select(
         "id, nombre, descripcion, estado, fecha_inicio_planificada, fecha_fin_planificada",
       )
-      .eq("empresa_id", EMPRESA_ID)
+      .eq("empresa_id", empresaId)
       .in("estado", ["Activo", "Planificacion"])
       .order("creado_en", { ascending: false })
       .then(({ data, error }) => {
         if (error) setError(error.message);
         else setProjects(data ?? []);
-        setLoading(false); // ← moved here, runs in both cases
+        setLoading(false);
       });
-  }, []);
+  }, [user, authLoading]);
 
-  if (loading) return <div style={centered}>Cargando proyectos...</div>;
+  if (authLoading || loading) return <div style={centered}>Cargando proyectos...</div>;
 
   if (error)
     return (
@@ -121,7 +132,7 @@ export default function InspectorPage() {
           return (
             <Link
               key={p.id}
-              href={`/inspector/${p.id}`}
+              href={`/dashboard/inspector/${p.id}`}
               style={{ textDecoration: "none" }}
             >
               <div

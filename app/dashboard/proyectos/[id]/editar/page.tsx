@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 import {
   getProyectoById,
   updateProyecto,
@@ -49,6 +50,7 @@ export default function EditarProyectoPage() {
 
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   const [form, setForm] = useState<FormState | null>(null);
   const [original, setOriginal] = useState<FormState | null>(null);
@@ -61,6 +63,12 @@ export default function EditarProyectoPage() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     getProyectoById(id)
       .then((p) => {
         if (!p) throw new Error("Proyecto no encontrado.");
@@ -70,7 +78,7 @@ export default function EditarProyectoPage() {
       })
       .catch((e) => setFetchError(e.message))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, user, authLoading, router]);
 
   async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -158,7 +166,7 @@ export default function EditarProyectoPage() {
         fecha_fin_planificada: form.fecha_fin_planificada,
         estado: form.estado,
       });
-      router.push(`/proyectos/${id}`);
+      router.push(`/dashboard/proyectos/${id}`);
     } catch (e: unknown) {
       setServerError(
         e instanceof Error ? e.message : "Error al guardar los cambios.",
@@ -169,7 +177,7 @@ export default function EditarProyectoPage() {
 
   // ── Loading / error states ──────────────────────────────────────────────────
 
-  if (loading)
+  if (authLoading || loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <p className="text-sm text-gray-400">Cargando proyecto...</p>
@@ -184,7 +192,7 @@ export default function EditarProyectoPage() {
             {fetchError ?? "Proyecto no encontrado."}
           </p>
           <Link
-            href="/proyectos"
+            href="/dashboard/proyectos"
             className="text-sm text-blue-600 hover:underline"
           >
             ← Volver a proyectos
@@ -201,7 +209,7 @@ export default function EditarProyectoPage() {
         {/* Header */}
         <div className="mb-8">
           <Link
-            href={`/proyectos/${id}`}
+            href={`/dashboard/proyectos/${id}`}
             className="text-xs text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-flex items-center gap-1"
           >
             ← Volver al proyecto
@@ -317,11 +325,10 @@ export default function EditarProyectoPage() {
 
             <label
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-sm cursor-pointer transition-colors
-    ${
-      importing
-        ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-        : "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
-    }`}
+    ${importing
+                  ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                  : "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                }`}
             >
               <input
                 type="file"
@@ -336,11 +343,10 @@ export default function EditarProyectoPage() {
             {importResult && (
               <div
                 className={`mt-3 rounded-lg px-4 py-3 text-sm border
-      ${
-        importResult.ok
-          ? "bg-green-50 border-green-200 text-green-700"
-          : "bg-red-50 border-red-200 text-red-700"
-      }`}
+      ${importResult.ok
+                    ? "bg-green-50 border-green-200 text-green-700"
+                    : "bg-red-50 border-red-200 text-red-700"
+                  }`}
               >
                 {importResult.message}
               </div>
@@ -365,7 +371,7 @@ export default function EditarProyectoPage() {
             )}
             <div className="flex items-center gap-3">
               <Link
-                href={`/proyectos/${id}`}
+                href={`/dashboard/proyectos/${id}`}
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Cancelar

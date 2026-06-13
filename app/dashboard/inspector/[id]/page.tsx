@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Task {
   id: string;
@@ -79,6 +80,7 @@ function isLeaf(task: Task, tasks: Task[]): boolean {
 
 export default function InspectorProjectPage() {
   const { id } = useParams<{ id: string }>();
+  const { user, loading: authLoading } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,10 +90,16 @@ export default function InspectorProjectPage() {
   );
 
   useEffect(() => {
-    const supabase = createBrowserClient(
+    /*const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
+    );*/
+    if (authLoading) return;
+    if (!user) {
+      setError("No autorizado. Por favor inicia sesión.");
+      setLoading(false);
+      return;
+    }
 
     async function load() {
       const { data: proj, error: projErr } = await supabase
@@ -122,9 +130,9 @@ export default function InspectorProjectPage() {
     }
 
     load().finally(() => setLoading(false));
-  }, [id]);
+  }, [id, user, authLoading]);
 
-  if (loading) return <div style={centered}>Cargando tareas...</div>;
+  if (authLoading || loading) return <div style={centered}>Cargando tareas...</div>;
   if (error)
     return (
       <div style={centered}>
@@ -161,7 +169,7 @@ export default function InspectorProjectPage() {
       <div style={topBar}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Link
-            href="/inspector"
+            href="/dashboard/inspector"
             style={{
               fontSize: 11,
               color: "var(--color-text-tertiary)",
@@ -273,7 +281,7 @@ export default function InspectorProjectPage() {
                     return (
                       <Link
                         key={task.id}
-                        href={`/inspector/${id}/tarea/${task.id}`}
+                        href={`/dashboard/inspector/${id}/tarea/${task.id}`}
                         style={{ textDecoration: "none" }}
                       >
                         <div
@@ -282,8 +290,8 @@ export default function InspectorProjectPage() {
                             (e.currentTarget.style.borderColor = color)
                           }
                           onMouseLeave={(e) =>
-                            (e.currentTarget.style.borderColor =
-                              "var(--color-border-secondary)")
+                          (e.currentTarget.style.borderColor =
+                            "var(--color-border-secondary)")
                           }
                         >
                           <div
