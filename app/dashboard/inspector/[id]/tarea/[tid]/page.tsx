@@ -5,8 +5,7 @@ import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { useAuth } from "@/hooks/useAuth";
 
-// ─── Swap for real session once auth lands ────────────────────────────────────
-// const USUARIO_ID = "a1111111-1111-1111-1111-111111111111";
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type EstadoTarea = "Completada" | "Pendiente" | "En_Curso" | "Bloqueada";
 type Gravedad = "Baja" | "Media" | "Alta" | "Critica";
@@ -20,38 +19,79 @@ interface Task {
   porcentaje_avance_actual: number;
 }
 
+// ─── Config ───────────────────────────────────────────────────────────────────
+
 const ESTADO_OPTIONS: {
   value: EstadoTarea;
   label: string;
-  color: string;
+  dot: string;
+  ring: string;
+  bg: string;
+  check: string;
   description: string;
 }[] = [
-    {
-      value: "Completada",
-      label: "Aprobada",
-      color: "#0F6E56",
-      description: "Tarea completada y verificada",
-    },
-    {
-      value: "En_Curso",
-      label: "Sin revisar",
-      color: "#378ADD",
-      description: "En progreso, sin revisión final",
-    },
-    {
-      value: "Bloqueada",
-      label: "Bloqueada",
-      color: "#993C1D",
-      description: "Impedimento activo, requiere atención",
-    },
-  ];
-
-const GRAVEDAD_OPTIONS: { value: Gravedad; label: string; color: string }[] = [
-  { value: "Baja", label: "Baja", color: "#378ADD" },
-  { value: "Media", label: "Media", color: "#BA7517" },
-  { value: "Alta", label: "Alta", color: "#E8714A" },
-  { value: "Critica", label: "Crítica", color: "#993C1D" },
+  {
+    value: "Completada",
+    label: "Aprobada",
+    dot: "bg-emerald-600",
+    ring: "border-emerald-600",
+    bg: "bg-emerald-50",
+    check: "text-emerald-600",
+    description: "Tarea completada y verificada",
+  },
+  {
+    value: "En_Curso",
+    label: "Sin revisar",
+    dot: "bg-sky-500",
+    ring: "border-sky-500",
+    bg: "bg-sky-50",
+    check: "text-sky-500",
+    description: "En progreso, sin revisión final",
+  },
+  {
+    value: "Bloqueada",
+    label: "Bloqueada",
+    dot: "bg-red-700",
+    ring: "border-red-700",
+    bg: "bg-red-50",
+    check: "text-red-700",
+    description: "Impedimento activo, requiere atención",
+  },
 ];
+
+const GRAVEDAD_OPTIONS: {
+  value: Gravedad;
+  label: string;
+  active: string;
+  ring: string;
+}[] = [
+  {
+    value: "Baja",
+    label: "Baja",
+    active: "text-sky-700 bg-sky-50",
+    ring: "border-sky-500",
+  },
+  {
+    value: "Media",
+    label: "Media",
+    active: "text-amber-700 bg-amber-50",
+    ring: "border-amber-500",
+  },
+  {
+    value: "Alta",
+    label: "Alta",
+    active: "text-orange-700 bg-orange-50",
+    ring: "border-orange-500",
+  },
+  {
+    value: "Critica",
+    label: "Crítica",
+    active: "text-red-700 bg-red-50",
+    ring: "border-red-600",
+  },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmtDate(s: string): string {
   return new Date(s).toLocaleDateString("es-CL", {
@@ -64,6 +104,8 @@ function fmtDate(s: string): string {
 function diffDays(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InspectorTareaPage() {
   const { id, tid } = useParams<{ id: string; tid: string }>();
@@ -101,13 +143,13 @@ export default function InspectorTareaPage() {
       .then(({ data, error }) => {
         if (error) {
           setError(error.message);
-          setLoading(false); // ← runs on error
+          setLoading(false);
           return;
         }
         setTask(data);
         const current = ESTADO_OPTIONS.find((o) => o.value === data.estado);
         if (current) setEstado(current.value);
-        setLoading(false); // ← runs on success
+        setLoading(false);
       });
   }, [tid]);
 
@@ -121,13 +163,7 @@ export default function InspectorTareaPage() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     );
 
-    // 1. insert reporte_avance
-    const pct =
-      estado === "Completada"
-        ? 100
-        : estado === "Bloqueada"
-          ? task.porcentaje_avance_actual
-          : task.porcentaje_avance_actual;
+    const pct = estado === "Completada" ? 100 : task.porcentaje_avance_actual;
 
     const { error: reporteErr } = await supabase
       .from("reportes_avance")
@@ -145,13 +181,9 @@ export default function InspectorTareaPage() {
       return;
     }
 
-    // 2. update tarea estado
     const { error: tareaErr } = await supabase
       .from("tareas")
-      .update({
-        estado,
-        porcentaje_avance_actual: pct,
-      })
+      .update({ estado, porcentaje_avance_actual: pct })
       .eq("id", task.id);
 
     if (tareaErr) {
@@ -160,7 +192,6 @@ export default function InspectorTareaPage() {
       return;
     }
 
-    // 3. if bloqueada, insert incidencia
     if (showIncidencia && descIncidencia.trim()) {
       const { error: incErr } = await supabase.from("incidencias").insert({
         proyecto_id: id,
@@ -171,7 +202,6 @@ export default function InspectorTareaPage() {
         descripcion: descIncidencia.trim(),
         estado: "Abierta",
       });
-
       if (incErr) {
         setError(incErr.message);
         setSubmitting(false);
@@ -183,23 +213,34 @@ export default function InspectorTareaPage() {
     setTimeout(() => router.push(`/dashboard/inspector/${id}`), 1500);
   }
 
-  // ── loading / error ──────────────────────────────────────────────────────
+  // ── loading / error / success ────────────────────────────────────────────
 
-  if (authLoading || loading) return <div style={centered}>Cargando tarea y sesión...</div>;
-  if (!user) return <div style={centered}>No autorizado. Por favor inicia sesión.</div>;
+  if (authLoading || loading)
+    return (
+      <div className="flex items-center justify-center h-screen text-sm text-slate-400">
+        Cargando tarea...
+      </div>
+    );
+
+  if (!user)
+    return (
+      <div className="flex items-center justify-center h-screen text-sm text-slate-400">
+        No autorizado. Por favor inicia sesión.
+      </div>
+    );
 
   if (error && !task)
     return (
-      <div style={centered}>
-        <p style={{ color: "#993C1D", fontSize: 13 }}>{error}</p>
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-sm text-red-600">{error}</p>
       </div>
     );
 
   if (success)
     return (
-      <div style={{ ...centered, flexDirection: "column", gap: 10 }}>
-        <div style={{ fontSize: 28 }}>✓</div>
-        <p style={{ fontSize: 13, color: "#0F6E56", fontFamily: "monospace" }}>
+      <div className="flex flex-col items-center justify-center h-screen gap-3">
+        <div className="text-3xl text-emerald-600">✓</div>
+        <p className="text-sm font-semibold text-emerald-700">
           Reporte enviado
         </p>
       </div>
@@ -209,238 +250,196 @@ export default function InspectorTareaPage() {
 
   const today = new Date().toISOString().slice(0, 10);
   const daysLeft = diffDays(today, task.fecha_fin_planificada);
+  const daysLabel =
+    daysLeft < 0
+      ? `${Math.abs(daysLeft)}d vencida`
+      : daysLeft === 0
+        ? "Vence hoy"
+        : `${daysLeft}d restantes`;
+  const daysColor =
+    daysLeft < 0
+      ? "text-red-600"
+      : daysLeft <= 7
+        ? "text-amber-600"
+        : "text-slate-500";
 
   return (
-    <div style={shell}>
+    <div className="min-h-screen bg-slate-50">
       {/* top bar */}
-      <div style={topBar}>
+      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-white">
         <Link
           href={`/dashboard/inspector/${id}`}
-          style={{
-            fontSize: 11,
-            color: "var(--color-text-tertiary)",
-            textDecoration: "none",
-          }}
+          className="text-xs text-slate-400 hover:text-slate-600 transition-colors no-underline"
         >
-          ← tareas
+          ← Tareas
         </Link>
-        <span style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
+        <span className="text-xs font-semibold text-slate-500">
           Reportar avance
         </span>
       </div>
 
-      <div style={{ padding: "20px", maxWidth: 540, margin: "0 auto" }}>
+      <div className="px-5 py-6 max-w-xl mx-auto flex flex-col gap-5">
         {/* task info card */}
-        <div style={infoCard}>
-          <p
-            style={{
-              fontSize: 14,
-              fontWeight: 500,
-              color: "var(--color-text-primary)",
-              margin: "0 0 8px",
-            }}
-          >
+        <div className="p-4 bg-white border border-slate-200 rounded-xl">
+          <p className="text-sm font-semibold text-slate-900 mb-3">
             {task.titulo}
           </p>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-            <div>
-              <p style={metaLabel}>INICIO</p>
-              <p style={metaValue}>{fmtDate(task.fecha_inicio_planificada)}</p>
-            </div>
-            <div>
-              <p style={metaLabel}>FIN</p>
-              <p style={metaValue}>{fmtDate(task.fecha_fin_planificada)}</p>
-            </div>
-            <div>
-              <p style={metaLabel}>PLAZO</p>
-              <p
-                style={{
-                  ...metaValue,
-                  color:
-                    daysLeft < 0
-                      ? "#993C1D"
-                      : daysLeft <= 7
-                        ? "#BA7517"
-                        : "var(--color-text-secondary)",
-                }}
-              >
-                {daysLeft < 0
-                  ? `${Math.abs(daysLeft)}d vencida`
-                  : daysLeft === 0
-                    ? "vence hoy"
-                    : `${daysLeft}d restantes`}
-              </p>
-            </div>
-            <div>
-              <p style={metaLabel}>AVANCE</p>
-              <p style={metaValue}>{task.porcentaje_avance_actual}%</p>
-            </div>
-          </div>
-        </div>
-
-        {/* estado selector */}
-        <div style={section}>
-          <p style={sectionLabel}>Estado de la tarea</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {ESTADO_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setEstado(opt.value)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "10px 14px",
-                  borderRadius: 8,
-                  border: `1.5px solid ${estado === opt.value ? opt.color : "var(--color-border-secondary)"}`,
-                  background:
-                    estado === opt.value
-                      ? `${opt.color}18`
-                      : "var(--color-background-primary)",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.1s",
-                }}
-              >
-                <div
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: opt.color,
-                    flexShrink: 0,
-                  }}
-                />
-                <div>
-                  <p
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      color: "var(--color-text-primary)",
-                      margin: 0,
-                    }}
-                  >
-                    {opt.label}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 10,
-                      color: "var(--color-text-tertiary)",
-                      margin: "1px 0 0",
-                    }}
-                  >
-                    {opt.description}
-                  </p>
-                </div>
-                {estado === opt.value && (
-                  <span
-                    style={{
-                      marginLeft: "auto",
-                      fontSize: 12,
-                      color: opt.color,
-                    }}
-                  >
-                    ✓
-                  </span>
-                )}
-              </button>
+          <div className="flex gap-5 flex-wrap">
+            {[
+              {
+                label: "Inicio",
+                value: fmtDate(task.fecha_inicio_planificada),
+                color: "",
+              },
+              {
+                label: "Fin",
+                value: fmtDate(task.fecha_fin_planificada),
+                color: "",
+              },
+              { label: "Plazo", value: daysLabel, color: daysColor },
+              {
+                label: "Avance",
+                value: `${task.porcentaje_avance_actual}%`,
+                color: "",
+              },
+            ].map(({ label, value, color }) => (
+              <div key={label}>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">
+                  {label}
+                </p>
+                <p
+                  className={`text-xs font-semibold ${color || "text-slate-600"}`}
+                >
+                  {value}
+                </p>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* incidencia fields — only when bloqueada */}
-        {showIncidencia && (
-          <div style={section}>
-            <p style={sectionLabel}>Detalle del bloqueo</p>
+        {/* estado selector */}
+        <div>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+            Estado de la tarea
+          </p>
+          <div className="flex flex-col gap-2">
+            {ESTADO_OPTIONS.map((opt) => {
+              const isSelected = estado === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setEstado(opt.value)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                    isSelected
+                      ? `${opt.bg} ${opt.ring}`
+                      : "bg-white border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full shrink-0 ${opt.dot}`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-800 m-0">
+                      {opt.label}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {opt.description}
+                    </p>
+                  </div>
+                  {isSelected && (
+                    <span className={`text-sm font-bold shrink-0 ${opt.check}`}>
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-            <div style={{ marginBottom: 12 }}>
-              <p style={fieldLabel}>Gravedad</p>
-              <div style={{ display: "flex", gap: 8 }}>
-                {GRAVEDAD_OPTIONS.map((g) => (
-                  <button
-                    key={g.value}
-                    onClick={() => setGravedad(g.value)}
-                    style={{
-                      flex: 1,
-                      padding: "6px 0",
-                      borderRadius: 6,
-                      border: `1.5px solid ${gravedad === g.value ? g.color : "var(--color-border-secondary)"}`,
-                      background:
-                        gravedad === g.value
-                          ? `${g.color}18`
-                          : "var(--color-background-primary)",
-                      fontSize: 11,
-                      fontWeight: gravedad === g.value ? 600 : 400,
-                      color:
-                        gravedad === g.value
-                          ? g.color
-                          : "var(--color-text-tertiary)",
-                      cursor: "pointer",
-                      transition: "all 0.1s",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    {g.label}
-                  </button>
-                ))}
+        {/* incidencia — only when bloqueada */}
+        {showIncidencia && (
+          <div className="p-4 bg-white border border-slate-200 rounded-xl flex flex-col gap-4">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Detalle del bloqueo
+            </p>
+
+            <div>
+              <p className="text-xs font-medium text-slate-600 mb-2">
+                Gravedad
+              </p>
+              <div className="flex gap-2">
+                {GRAVEDAD_OPTIONS.map((g) => {
+                  const isSelected = gravedad === g.value;
+                  return (
+                    <button
+                      key={g.value}
+                      onClick={() => setGravedad(g.value)}
+                      className={`flex-1 py-1.5 rounded-lg border-2 text-xs font-semibold transition-all cursor-pointer ${
+                        isSelected
+                          ? `${g.active} ${g.ring}`
+                          : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
+                      }`}
+                    >
+                      {g.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div>
-              <p style={fieldLabel}>
-                Descripción del problema{" "}
-                <span style={{ color: "#993C1D" }}>*</span>
+              <p className="text-xs font-medium text-slate-600 mb-1.5">
+                Descripción del problema <span className="text-red-500">*</span>
               </p>
               <textarea
                 value={descIncidencia}
                 onChange={(e) => setDescIncidencia(e.target.value)}
                 rows={3}
                 placeholder="Describe qué está bloqueando esta tarea..."
-                style={textarea}
+                className="w-full px-3 py-2 text-xs text-slate-800 bg-white border border-slate-200 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
         )}
 
-        {/* comentario + evidencia */}
-        <div style={section}>
-          <p style={sectionLabel}>Observaciones</p>
+        {/* observaciones */}
+        <div className="p-4 bg-white border border-slate-200 rounded-xl flex flex-col gap-4">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            Observaciones
+          </p>
 
-          <div style={{ marginBottom: 12 }}>
-            <p style={fieldLabel}>Comentario</p>
+          <div>
+            <p className="text-xs font-medium text-slate-600 mb-1.5">
+              Comentario
+            </p>
             <textarea
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
               rows={3}
               placeholder="Observaciones sobre el avance..."
-              style={textarea}
+              className="w-full px-3 py-2 text-xs text-slate-800 bg-white border border-slate-200 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <p style={fieldLabel}>URL de evidencia fotográfica</p>
+            <p className="text-xs font-medium text-slate-600 mb-1.5">
+              URL de evidencia fotográfica
+            </p>
             <input
               type="url"
               value={urlEvidencia}
               onChange={(e) => setUrlEvidencia(e.target.value)}
               placeholder="https://..."
-              style={input}
+              className="w-full px-3 py-2 text-xs text-slate-800 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
         </div>
 
         {/* error */}
         {error && (
-          <div
-            style={{
-              padding: "10px 14px",
-              borderRadius: 8,
-              background: "#993C1D18",
-              border: "0.5px solid #993C1D",
-              marginBottom: 16,
-            }}
-          >
-            <p style={{ fontSize: 11, color: "#993C1D", margin: 0 }}>{error}</p>
+          <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-xs text-red-700">{error}</p>
           </div>
         )}
 
@@ -448,119 +447,13 @@ export default function InspectorTareaPage() {
         <button
           onClick={handleSubmit}
           disabled={submitting || (showIncidencia && !descIncidencia.trim())}
-          style={{
-            width: "100%",
-            padding: "12px",
-            borderRadius: 8,
-            border: "none",
-            background: submitting
-              ? "var(--color-border-secondary)"
-              : "#185FA5",
-            color: submitting ? "var(--color-text-tertiary)" : "#fff",
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: submitting ? "not-allowed" : "pointer",
-            fontFamily: "inherit",
-            transition: "background 0.1s",
-          }}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-sky-700 hover:bg-sky-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors"
         >
           {submitting ? "Enviando..." : "Enviar reporte"}
         </button>
 
-        <div style={{ height: 40 }} />
+        <div className="h-8" />
       </div>
     </div>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const shell: React.CSSProperties = {
-  minHeight: "100vh",
-  background: "var(--color-background-tertiary)",
-  fontFamily: "var(--font-mono, 'Courier New', monospace)",
-};
-
-const topBar: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: "10px 20px",
-  borderBottom: "0.5px solid var(--color-border-secondary)",
-  background: "var(--color-background-primary)",
-};
-
-const infoCard: React.CSSProperties = {
-  padding: "14px",
-  borderRadius: 8,
-  border: "0.5px solid var(--color-border-secondary)",
-  background: "var(--color-background-primary)",
-  marginBottom: 20,
-};
-
-const section: React.CSSProperties = {
-  marginBottom: 20,
-};
-
-const sectionLabel: React.CSSProperties = {
-  fontSize: 9,
-  fontWeight: 600,
-  letterSpacing: "0.1em",
-  color: "var(--color-text-tertiary)",
-  margin: "0 0 10px",
-};
-
-const fieldLabel: React.CSSProperties = {
-  fontSize: 10,
-  color: "var(--color-text-secondary)",
-  margin: "0 0 5px",
-};
-
-const metaLabel: React.CSSProperties = {
-  fontSize: 9,
-  letterSpacing: "0.08em",
-  color: "var(--color-text-tertiary)",
-  margin: 0,
-};
-
-const metaValue: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 500,
-  color: "var(--color-text-secondary)",
-  margin: "2px 0 0",
-};
-
-const textarea: React.CSSProperties = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: 6,
-  border: "0.5px solid var(--color-border-secondary)",
-  background: "var(--color-background-primary)",
-  color: "var(--color-text-primary)",
-  fontSize: 12,
-  fontFamily: "inherit",
-  resize: "vertical",
-  boxSizing: "border-box",
-};
-
-const input: React.CSSProperties = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: 6,
-  border: "0.5px solid var(--color-border-secondary)",
-  background: "var(--color-background-primary)",
-  color: "var(--color-text-primary)",
-  fontSize: 12,
-  fontFamily: "inherit",
-  boxSizing: "border-box",
-};
-
-const centered: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100vh",
-  fontSize: 13,
-  color: "var(--color-text-tertiary)",
-  fontFamily: "monospace",
-};

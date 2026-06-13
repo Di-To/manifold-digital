@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { RoleTypes } from '@/app/data-structure';
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { RoleTypes } from "@/app/data-structure";
 
 export default function RegisterEmployeeForm() {
   const { user } = useAuth();
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rol, setRol] = useState<RoleTypes>(RoleTypes.Inspector);
-  const [hiringDate, setHiringDate] = useState('');
+  const [hiringDate, setHiringDate] = useState("");
 
-  const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [status, setStatus] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -21,30 +24,38 @@ export default function RegisterEmployeeForm() {
     setStatus(null);
 
     try {
-      const res = await fetch('/api/admin/create-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/admin/create-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nombre,
           email,
           password,
           rol,
           hiringDate,
-          companyId: user?.companyId
+          companyId: user?.companyId,
         }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error al registrar trabajador');
+      if (!res.ok)
+        throw new Error(data.error || "Error al registrar trabajador");
 
-      setStatus({ success: true, message: '🚀 Trabajador registrado exitosamente.' });
-      setNombre('');
-      setEmail('');
-      setPassword('');
+      setStatus({
+        success: true,
+        message: "🚀 Trabajador registrado exitosamente.",
+      });
+      setNombre("");
+      setEmail("");
+      setPassword("");
       setRol(RoleTypes.Inspector);
-      setHiringDate('');
-    } catch (err: any) {
-      setStatus({ success: false, message: err.message });
+      setHiringDate("");
+    } catch (err: unknown) {
+      setStatus({
+        success: false,
+        message:
+          err instanceof Error ? err.message : "Error al registrar trabajador",
+      });
     } finally {
       setLoading(false);
     }
@@ -53,24 +64,31 @@ export default function RegisterEmployeeForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold text-slate-900 tracking-tight">Registrar Nuevo Trabajador</h3>
+        <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+          Registrar Nuevo Trabajador
+        </h3>
         <p className="text-xs text-slate-500 mt-0.5">
           El nuevo usuario se asociará automáticamente a tu misma empresa.
         </p>
       </div>
 
       {status && (
-        <div className={`p-3.5 rounded-xl text-xs font-semibold ring-1 ${status.success
-            ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/10'
-            : 'bg-red-50 text-red-600 ring-red-600/10'
-          }`}>
+        <div
+          className={`p-3.5 rounded-xl text-xs font-semibold ring-1 ${
+            status.success
+              ? "bg-emerald-50 text-emerald-700 ring-emerald-600/10"
+              : "bg-red-50 text-red-600 ring-red-600/10"
+          }`}
+        >
           {status.message}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nombre Completo</label>
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Nombre Completo
+          </label>
           <input
             type="text"
             required
@@ -82,7 +100,9 @@ export default function RegisterEmployeeForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email</label>
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Email
+          </label>
           <input
             type="email"
             required
@@ -94,7 +114,9 @@ export default function RegisterEmployeeForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contraseña temporal</label>
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Contraseña temporal
+          </label>
           <input
             type="password"
             required
@@ -106,7 +128,9 @@ export default function RegisterEmployeeForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Rol operacional</label>
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Rol operacional
+          </label>
           <select
             className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 text-sm outline-none focus:border-sky-500 bg-slate-50/50 h-[38px]"
             value={rol}
@@ -119,7 +143,9 @@ export default function RegisterEmployeeForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Fecha de contratación</label>
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Fecha de contratación
+          </label>
           <input
             type="date"
             required
@@ -135,7 +161,7 @@ export default function RegisterEmployeeForm() {
             disabled={loading}
             className="w-full sm:w-auto bg-[#0284c7] hover:bg-sky-700 text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-colors disabled:opacity-50"
           >
-            {loading ? 'Registrando...' : 'Crear nuevo usuario'}
+            {loading ? "Registrando..." : "Crear nuevo usuario"}
           </button>
         </div>
       </form>

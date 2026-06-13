@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabaseClient";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface Task {
   id: string;
   titulo: string;
@@ -21,6 +23,8 @@ interface Project {
 }
 
 type Urgency = "vencida" | "hoy" | "proxima" | "futura" | "completada";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function diffDays(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
@@ -43,6 +47,12 @@ function getUrgency(task: Task, today: string): Urgency {
   return "futura";
 }
 
+function isLeaf(task: Task, tasks: Task[]): boolean {
+  return !tasks.some((t) => t.tarea_padre_id === task.id);
+}
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+
 const URGENCY_ORDER: Urgency[] = [
   "vencida",
   "hoy",
@@ -54,33 +64,32 @@ const URGENCY_ORDER: Urgency[] = [
 const URGENCY_LABELS: Record<Urgency, string> = {
   vencida: "Vencidas",
   hoy: "Vence hoy",
-  proxima: "Próximas 7 días",
+  proxima: "Próximos 7 días",
   futura: "Próximas",
   completada: "Completadas",
 };
 
-const URGENCY_COLORS: Record<Urgency, string> = {
-  vencida: "#993C1D",
-  hoy: "#E8714A",
-  proxima: "#BA7517",
-  futura: "var(--color-text-secondary)",
-  completada: "#0F6E56",
+const URGENCY_STYLES: Record<Urgency, { dot: string; text: string }> = {
+  vencida: { dot: "bg-red-500", text: "text-red-700" },
+  hoy: { dot: "bg-orange-400", text: "text-orange-600" },
+  proxima: { dot: "bg-amber-500", text: "text-amber-700" },
+  futura: { dot: "bg-slate-400", text: "text-slate-500" },
+  completada: { dot: "bg-emerald-500", text: "text-emerald-700" },
 };
 
-const ESTADO_COLORS: Record<string, string> = {
-  Completada: "#0F6E56",
-  En_Curso: "#1D9E75",
-  Bloqueada: "#993C1D",
-  Pendiente: "#BA7517",
+const ESTADO_STYLES: Record<string, string> = {
+  Completada: "text-emerald-700",
+  En_Curso: "text-emerald-600",
+  Bloqueada: "text-red-700",
+  Pendiente: "text-amber-700",
 };
 
-function isLeaf(task: Task, tasks: Task[]): boolean {
-  return !tasks.some((t) => t.tarea_padre_id === task.id);
-}
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InspectorProjectPage() {
   const { id } = useParams<{ id: string }>();
   const { user, loading: authLoading } = useAuth();
+
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,18 +99,15 @@ export default function InspectorProjectPage() {
   );
 
   useEffect(() => {
-    /*const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );*/
     if (authLoading) return;
-    if (!user) {
-      setError("No autorizado. Por favor inicia sesión.");
-      setLoading(false);
-      return;
-    }
 
     async function load() {
+      if (!user) {
+        setError("No autorizado. Por favor inicia sesión.");
+        setLoading(false);
+        return;
+      }
+
       const { data: proj, error: projErr } = await supabase
         .from("proyectos")
         .select("id, nombre")
@@ -110,6 +116,7 @@ export default function InspectorProjectPage() {
 
       if (projErr) {
         setError(projErr.message);
+        setLoading(false);
         return;
       }
       setProject(proj);
@@ -124,28 +131,33 @@ export default function InspectorProjectPage() {
 
       if (tareasErr) {
         setError(tareasErr.message);
+        setLoading(false);
         return;
       }
       setTasks(tareasData ?? []);
+      setLoading(false);
     }
 
-    load().finally(() => setLoading(false));
+    load();
   }, [id, user, authLoading]);
 
-  if (authLoading || loading) return <div style={centered}>Cargando tareas...</div>;
+  if (authLoading || loading)
+    return (
+      <div className="flex items-center justify-center h-screen text-sm text-slate-400">
+        Cargando tareas...
+      </div>
+    );
+
   if (error)
     return (
-      <div style={centered}>
-        <p style={{ color: "#993C1D" }}>{error}</p>
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-sm text-red-600">{error}</p>
       </div>
     );
 
   const today = new Date().toISOString().slice(0, 10);
-
-  // only show leaf tasks — groups are not reportable
   const leaves = tasks.filter((t) => isLeaf(t, tasks));
 
-  // group by urgency
   const grouped = URGENCY_ORDER.reduce<Record<Urgency, Task[]>>(
     (acc, u) => {
       acc[u] = leaves.filter((t) => getUrgency(t, today) === u);
@@ -164,225 +176,113 @@ export default function InspectorProjectPage() {
   }
 
   return (
-    <div style={shell}>
+    <div className="min-h-screen bg-slate-50">
       {/* top bar */}
-      <div style={topBar}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-white">
+        <div className="flex items-center gap-2">
           <Link
             href="/dashboard/inspector"
-            style={{
-              fontSize: 11,
-              color: "var(--color-text-tertiary)",
-              textDecoration: "none",
-            }}
+            className="text-xs text-slate-400 hover:text-slate-600 transition-colors no-underline"
           >
-            ← proyectos
+            ← Proyectos
           </Link>
-          <span style={{ color: "var(--color-border-secondary)" }}>/</span>
-          <span
-            style={{
-              fontSize: 11,
-              color: "var(--color-text-secondary)",
-              maxWidth: 200,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <span className="text-slate-300">/</span>
+          <span className="text-xs text-slate-600 truncate max-w-[200px]">
             {project?.nombre}
           </span>
         </div>
-        <p style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
-          {leaves.length} tareas
-        </p>
+        <span className="text-xs text-slate-400">{leaves.length} tareas</span>
       </div>
 
       {/* task groups */}
-      <div
-        style={{
-          padding: "16px 20px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-        }}
-      >
+      <div className="p-5 flex flex-col gap-5">
         {URGENCY_ORDER.map((urgency) => {
           const group = grouped[urgency];
           if (group.length === 0) return null;
           const isOpen = !collapsed.has(urgency);
-          const color = URGENCY_COLORS[urgency];
+          const style = URGENCY_STYLES[urgency];
 
           return (
             <div key={urgency}>
               {/* group header */}
               <button
                 onClick={() => toggleGroup(urgency)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  width: "100%",
-                  background: "none",
-                  border: "none",
-                  padding: "4px 0",
-                  cursor: "pointer",
-                  marginBottom: 8,
-                }}
+                className="flex items-center gap-2 w-full py-1 mb-2 bg-transparent border-none cursor-pointer"
               >
-                <div
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: color,
-                    flexShrink: 0,
-                  }}
-                />
+                <div className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
                 <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: "0.07em",
-                    color,
-                  }}
+                  className={`text-xs font-bold tracking-wide ${style.text}`}
                 >
-                  {URGENCY_LABELS[urgency].toUpperCase()}
+                  {URGENCY_LABELS[urgency]}
                 </span>
-                <span
-                  style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}
-                >
-                  ({group.length})
-                </span>
-                <span
-                  style={{
-                    marginLeft: "auto",
-                    fontSize: 9,
-                    color: "var(--color-text-tertiary)",
-                  }}
-                >
+                <span className="text-xs text-slate-400">({group.length})</span>
+                <span className="ml-auto text-xs text-slate-400">
                   {isOpen ? "▼" : "▶"}
                 </span>
               </button>
 
               {/* task cards */}
               {isOpen && (
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 6 }}
-                >
+                <div className="flex flex-col gap-2">
                   {group.map((task) => {
                     const daysLeft = diffDays(
                       today,
                       task.fecha_fin_planificada,
                     );
-                    const estadoColor =
-                      ESTADO_COLORS[task.estado] ??
-                      "var(--color-text-tertiary)";
+                    const estadoText =
+                      ESTADO_STYLES[task.estado] ?? "text-slate-400";
+                    const daysColor =
+                      daysLeft < 0
+                        ? "text-red-600"
+                        : daysLeft === 0
+                          ? "text-orange-500"
+                          : "text-slate-400";
+                    const daysLabel =
+                      daysLeft < 0
+                        ? `${Math.abs(daysLeft)}d vencida`
+                        : daysLeft === 0
+                          ? "vence hoy"
+                          : `${daysLeft}d`;
 
                     return (
                       <Link
                         key={task.id}
                         href={`/dashboard/inspector/${id}/tarea/${task.id}`}
-                        style={{ textDecoration: "none" }}
+                        className="no-underline group"
                       >
-                        <div
-                          style={taskCard}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.borderColor = color)
-                          }
-                          onMouseLeave={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--color-border-secondary)")
-                          }
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              gap: 10,
-                            }}
-                          >
-                            <p
-                              style={{
-                                fontSize: 12,
-                                fontWeight: 500,
-                                color: "var(--color-text-primary)",
-                                margin: 0,
-                                flex: 1,
-                                minWidth: 0,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
+                        <div className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer transition-all group-hover:shadow-md group-hover:border-slate-300">
+                          {/* title + estado */}
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-medium text-slate-800 truncate flex-1 min-w-0 m-0">
                               {task.titulo}
                             </p>
                             <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 500,
-                                color: estadoColor,
-                                flexShrink: 0,
-                              }}
+                              className={`text-xs font-semibold shrink-0 ${estadoText}`}
                             >
                               {task.estado}
                             </span>
                           </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              marginTop: 6,
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontSize: 10,
-                                color: "var(--color-text-tertiary)",
-                              }}
-                            >
+                          {/* dates + days left */}
+                          <div className="flex items-center justify-between mt-1.5">
+                            <span className="text-xs text-slate-400">
                               {fmtDate(task.fecha_inicio_planificada)} →{" "}
                               {fmtDate(task.fecha_fin_planificada)}
                             </span>
                             <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 500,
-                                color:
-                                  daysLeft < 0
-                                    ? "#993C1D"
-                                    : daysLeft === 0
-                                      ? "#E8714A"
-                                      : "var(--color-text-tertiary)",
-                              }}
+                              className={`text-xs font-medium ${daysColor}`}
                             >
-                              {daysLeft < 0
-                                ? `${Math.abs(daysLeft)}d vencida`
-                                : daysLeft === 0
-                                  ? "vence hoy"
-                                  : `${daysLeft}d`}
+                              {daysLabel}
                             </span>
                           </div>
 
                           {/* progress bar */}
                           {task.porcentaje_avance_actual > 0 && (
-                            <div
-                              style={{
-                                marginTop: 6,
-                                height: 3,
-                                borderRadius: 2,
-                                background: "var(--color-border-secondary)",
-                                overflow: "hidden",
-                              }}
-                            >
+                            <div className="mt-2 h-1 rounded-full bg-slate-100 overflow-hidden">
                               <div
+                                className="h-full rounded-full bg-emerald-500"
                                 style={{
-                                  height: "100%",
                                   width: `${task.porcentaje_avance_actual}%`,
-                                  background: estadoColor,
-                                  borderRadius: 2,
                                 }}
                               />
                             </div>
@@ -400,39 +300,3 @@ export default function InspectorProjectPage() {
     </div>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const shell: React.CSSProperties = {
-  minHeight: "100vh",
-  background: "var(--color-background-tertiary)",
-  fontFamily: "var(--font-mono, 'Courier New', monospace)",
-};
-
-const topBar: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: "10px 20px",
-  borderBottom: "0.5px solid var(--color-border-secondary)",
-  background: "var(--color-background-primary)",
-};
-
-const taskCard: React.CSSProperties = {
-  padding: "10px 12px",
-  background: "var(--color-background-primary)",
-  border: "0.5px solid var(--color-border-secondary)",
-  borderRadius: 8,
-  cursor: "pointer",
-  transition: "border-color 0.15s",
-};
-
-const centered: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100vh",
-  fontSize: 13,
-  color: "var(--color-text-tertiary)",
-  fontFamily: "monospace",
-};
