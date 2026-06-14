@@ -88,7 +88,7 @@ export default function ProyectoDetailPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      router.push("/login");
+      router.push("/auth");
       return;
     }
 
