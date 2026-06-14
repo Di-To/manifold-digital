@@ -4,8 +4,7 @@ import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { useAuth } from "@/hooks/useAuth";
 
-// ─── Swap for real session once auth lands ────────────────────────────────────
-// const EMPRESA_ID = "e1111111-1111-1111-1111-111111111111";
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Project {
   id: string;
@@ -16,12 +15,7 @@ interface Project {
   fecha_fin_planificada: string | null;
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  Activo: "#1D9E75",
-  Planificacion: "#378ADD",
-  Pausado: "#BA7517",
-  Finalizado: "#555",
-};
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmtDate(s: string | null): string {
   if (!s) return "—";
@@ -36,6 +30,15 @@ function diffDays(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
 
+const STATUS_STYLES: Record<string, { dot: string; text: string }> = {
+  Activo: { dot: "bg-emerald-500", text: "text-emerald-700" },
+  Planificacion: { dot: "bg-sky-500", text: "text-sky-700" },
+  Pausado: { dot: "bg-amber-500", text: "text-amber-700" },
+  Finalizado: { dot: "bg-slate-400", text: "text-slate-500" },
+};
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function InspectorPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,53 +48,66 @@ export default function InspectorPage() {
   useEffect(() => {
     if (authLoading) return;
 
-    const empresaId = user?.companyId;
-    if (!empresaId || empresaId === 'NOT_ASSIGN') {
-      setError("No se encontró una empresa válida vinculada a tu cuenta.");
+    async function load() {
+      const empresaId = user?.companyId;
+
+      if (!empresaId || empresaId === "NOT_ASSIGN") {
+        setError("No se encontró una empresa válida vinculada a tu cuenta.");
+        setLoading(false);
+        return;
+      }
+
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      );
+
+      const { data, error } = await supabase
+        .from("proyectos")
+        .select(
+          "id, nombre, descripcion, estado, fecha_inicio_planificada, fecha_fin_planificada",
+        )
+        .eq("empresa_id", empresaId)
+        .in("estado", ["Activo", "Planificacion"])
+        .order("creado_en", { ascending: false });
+
+      if (error) setError(error.message);
+      else setProjects(data ?? []);
       setLoading(false);
-      return;
     }
 
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
-
-    supabase
-      .from("proyectos")
-      .select(
-        "id, nombre, descripcion, estado, fecha_inicio_planificada, fecha_fin_planificada",
-      )
-      .eq("empresa_id", empresaId)
-      .in("estado", ["Activo", "Planificacion"])
-      .order("creado_en", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else setProjects(data ?? []);
-        setLoading(false);
-      });
+    load();
   }, [user, authLoading]);
 
-  if (authLoading || loading) return <div style={centered}>Cargando proyectos...</div>;
+  if (authLoading || loading)
+    return (
+      <div className="flex items-center justify-center h-screen text-sm text-slate-400">
+        Cargando proyectos...
+      </div>
+    );
 
   if (error)
     return (
-      <div style={centered}>
-        <p style={{ color: "#993C1D" }}>{error}</p>
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-sm text-red-600">{error}</p>
       </div>
     );
 
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <div style={shell}>
+    <div className="min-h-screen bg-slate-50">
       {/* header */}
-      <div style={topBar}>
+      <div className="flex items-end justify-between px-5 pt-5 pb-4 border-b border-slate-200 bg-white">
         <div>
-          <p style={eyebrow}>INSPECTOR</p>
-          <h1 style={title}>Mis proyectos</h1>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+            Inspector
+          </p>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+            Mis proyectos
+          </h1>
         </div>
-        <p style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
+        <p className="text-xs text-slate-400 capitalize">
           {new Date().toLocaleDateString("es-CL", {
             weekday: "long",
             day: "2-digit",
@@ -101,144 +117,72 @@ export default function InspectorPage() {
       </div>
 
       {/* list */}
-      <div
-        style={{
-          padding: "16px 20px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
+      <div className="p-5 flex flex-col gap-3">
         {projects.length === 0 && (
-          <p
-            style={{
-              fontSize: 12,
-              color: "var(--color-text-tertiary)",
-              textAlign: "center",
-              marginTop: 60,
-            }}
-          >
+          <p className="text-sm text-slate-400 text-center mt-16">
             No hay proyectos activos asignados.
           </p>
         )}
+
         {projects.map((p) => {
           const daysLeft = p.fecha_fin_planificada
             ? diffDays(today, p.fecha_fin_planificada)
             : null;
           const isLate = daysLeft !== null && daysLeft < 0;
           const isClose = daysLeft !== null && daysLeft >= 0 && daysLeft <= 14;
-          const color = STATUS_COLORS[p.estado] ?? "#555";
+          const status = STATUS_STYLES[p.estado] ?? STATUS_STYLES.Finalizado;
+
+          const daysLabel =
+            daysLeft === null
+              ? null
+              : isLate
+                ? `${Math.abs(daysLeft)}d vencido`
+                : daysLeft === 0
+                  ? "Vence hoy"
+                  : `${daysLeft}d restantes`;
+
+          const daysColor = isLate
+            ? "text-red-600"
+            : isClose
+              ? "text-amber-600"
+              : "text-slate-400";
 
           return (
             <Link
               key={p.id}
               href={`/dashboard/inspector/${p.id}`}
-              style={{ textDecoration: "none" }}
+              className="no-underline group"
             >
-              <div
-                style={card}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = color)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor =
-                    "var(--color-border-secondary)")
-                }
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    gap: 12,
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        marginBottom: 3,
-                      }}
-                    >
+              <div className="p-4 bg-white border border-slate-200 rounded-xl cursor-pointer transition-all group-hover:shadow-md group-hover:border-slate-300">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 mb-1">
                       <div
-                        style={{
-                          width: 7,
-                          height: 7,
-                          borderRadius: "50%",
-                          background: color,
-                          flexShrink: 0,
-                        }}
+                        className={`w-2 h-2 rounded-full shrink-0 ${status.dot}`}
                       />
                       <span
-                        style={{
-                          fontSize: 9,
-                          color,
-                          fontWeight: 500,
-                          letterSpacing: "0.07em",
-                        }}
+                        className={`text-xs font-semibold tracking-wide ${status.text}`}
                       >
-                        {p.estado.toUpperCase()}
+                        {p.estado}
                       </span>
                     </div>
-                    <p
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: "var(--color-text-primary)",
-                        margin: 0,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
+                    <p className="text-sm font-semibold text-slate-900 truncate">
                       {p.nombre}
                     </p>
                     {p.descripcion && (
-                      <p
-                        style={{
-                          fontSize: 10,
-                          color: "var(--color-text-tertiary)",
-                          margin: "2px 0 0",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
+                      <p className="text-xs text-slate-400 truncate mt-0.5">
                         {p.descripcion}
                       </p>
                     )}
                   </div>
 
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    {daysLeft !== null && (
-                      <p
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 600,
-                          margin: 0,
-                          color: isLate
-                            ? "#993C1D"
-                            : isClose
-                              ? "#BA7517"
-                              : "var(--color-text-tertiary)",
-                        }}
-                      >
-                        {isLate
-                          ? `${Math.abs(daysLeft)}d vencido`
-                          : daysLeft === 0
-                            ? "vence hoy"
-                            : `${daysLeft}d restantes`}
+                  <div className="text-right shrink-0">
+                    {daysLabel && (
+                      <p className={`text-xs font-semibold ${daysColor}`}>
+                        {daysLabel}
                       </p>
                     )}
-                    <p
-                      style={{
-                        fontSize: 10,
-                        color: "var(--color-text-tertiary)",
-                        margin: "2px 0 0",
-                      }}
-                    >
+                    <p className="text-xs text-slate-400 mt-0.5">
                       hasta {fmtDate(p.fecha_fin_planificada)}
                     </p>
                   </div>
@@ -251,53 +195,3 @@ export default function InspectorPage() {
     </div>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const shell: React.CSSProperties = {
-  minHeight: "100vh",
-  background: "var(--color-background-tertiary)",
-  fontFamily: "var(--font-mono, 'Courier New', monospace)",
-};
-
-const topBar: React.CSSProperties = {
-  display: "flex",
-  alignItems: "flex-end",
-  justifyContent: "space-between",
-  padding: "20px 20px 14px",
-  borderBottom: "0.5px solid var(--color-border-secondary)",
-  background: "var(--color-background-primary)",
-};
-
-const eyebrow: React.CSSProperties = {
-  fontSize: 9,
-  letterSpacing: "0.1em",
-  color: "var(--color-text-tertiary)",
-  margin: "0 0 3px",
-};
-
-const title: React.CSSProperties = {
-  fontSize: 18,
-  fontWeight: 600,
-  color: "var(--color-text-primary)",
-  margin: 0,
-};
-
-const card: React.CSSProperties = {
-  padding: "12px 14px",
-  background: "var(--color-background-primary)",
-  border: "0.5px solid var(--color-border-secondary)",
-  borderRadius: 8,
-  cursor: "pointer",
-  transition: "border-color 0.15s",
-};
-
-const centered: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100vh",
-  fontSize: 13,
-  color: "var(--color-text-tertiary)",
-  fontFamily: "monospace",
-};

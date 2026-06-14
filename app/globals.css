@@ -2,42 +2,68 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
 
-  /* ── design tokens ── */
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #f4f4f5;
-  --color-background-tertiary: #f0f0f1;
-  --color-background-info: #eff6ff;
+  /* ── Slate-based design tokens (matches dashboard palette) ── */
 
-  --color-text-primary: #111111;
-  --color-text-secondary: #444444;
-  --color-text-tertiary: #888888;
-  --color-text-info: #2563eb;
-  --color-text-danger: #dc2626;
+  /* Backgrounds */
+  --color-background-primary: #ffffff; /* cards, panels */
+  --color-background-secondary: #f8fafc; /* slate-50 — page bg */
+  --color-background-tertiary: #f1f5f9; /* slate-100 — hover, tag fills */
+  --color-background-info: #f0f9ff; /* sky-50 — info badges */
+  --color-background-success: #ecfdf5; /* emerald-50 — active status */
+  --color-background-warning: #fefce8; /* yellow-50 */
+  --color-background-danger: #fef2f2; /* red-50 — error blocks */
+  --color-background-canvas: #0f172a; /* dark surface for the timeline canvas */
 
-  --color-border-secondary: #e4e4e7;
-  --color-border-info: #93c5fd;
+  /* Text */
+  --color-text-primary: #0f172a; /* slate-900 */
+  --color-text-secondary: #475569; /* slate-600 */
+  --color-text-tertiary: #94a3b8; /* slate-400 */
+  --color-text-info: #0369a1; /* sky-700 */
+  --color-text-success: #047857; /* emerald-700 */
+  --color-text-warning: #a16207; /* yellow-700 */
+  --color-text-danger: #dc2626; /* red-600 */
+
+  /* Borders */
+  --color-border-primary: #cbd5e1; /* slate-300 */
+  --color-border-secondary: #e2e8f0; /* slate-200 */
+  --color-border-tertiary: #f1f5f9; /* slate-100 */
+  --color-border-info: #bae6fd; /* sky-200 */
+  --color-border-success: #a7f3d0; /* emerald-200 */
+  --color-border-danger: #fecaca; /* red-200 */
+  --color-border-canvas: rgba(255, 255, 255, 0.12);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --foreground: #f1f5f9;
 
-    --color-background-primary: #111111;
-    --color-background-secondary: #1c1c1e;
-    --color-background-tertiary: #161618;
-    --color-background-info: #1e3a5f;
+    --color-background-primary: #1e293b; /* slate-800 */
+    --color-background-secondary: #0f172a; /* slate-900 */
+    --color-background-tertiary: #1e293b; /* slate-800 */
+    --color-background-info: #0c2340;
+    --color-background-success: #052e16;
+    --color-background-warning: #1c1a02;
+    --color-background-danger: #1f0a0a;
+    --color-background-canvas: #080d14; /* slightly deeper in dark mode */
 
-    --color-text-primary: #f0f0f0;
-    --color-text-secondary: #aaaaaa;
-    --color-text-tertiary: #666666;
-    --color-text-info: #60a5fa;
-    --color-text-danger: #f87171;
+    --color-text-primary: #f1f5f9; /* slate-100 */
+    --color-text-secondary: #94a3b8; /* slate-400 */
+    --color-text-tertiary: #475569; /* slate-600 */
+    --color-text-info: #38bdf8; /* sky-400 */
+    --color-text-success: #34d399; /* emerald-400 */
+    --color-text-warning: #facc15; /* yellow-400 */
+    --color-text-danger: #f87171; /* red-400 */
 
-    --color-border-secondary: #2a2a2e;
-    --color-border-info: #1d4ed8;
+    --color-border-primary: #334155; /* slate-700 */
+    --color-border-secondary: #1e293b; /* slate-800 */
+    --color-border-tertiary: #0f172a; /* slate-900 */
+    --color-border-info: #0c4a6e;
+    --color-border-success: #064e3b;
+    --color-border-danger: #7f1d1d;
+    --color-border-canvas: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -51,5 +77,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
 }

@@ -38,14 +38,42 @@ function diffDays(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  Activo: "#1D9E75",
-  Planificacion: "#378ADD",
-  Pausado: "#BA7517",
-  Finalizado: "#555",
+const STATUS_STYLES: Record<
+  string,
+  { dot: string; text: string; badge: string }
+> = {
+  Activo: {
+    dot: "bg-emerald-500",
+    text: "text-emerald-700",
+    badge: "bg-emerald-50 ring-emerald-600/10",
+  },
+  Planificacion: {
+    dot: "bg-sky-500",
+    text: "text-sky-700",
+    badge: "bg-sky-50 ring-sky-600/10",
+  },
+  Pausado: {
+    dot: "bg-amber-500",
+    text: "text-amber-700",
+    badge: "bg-amber-50 ring-amber-600/10",
+  },
+  Finalizado: {
+    dot: "bg-slate-400",
+    text: "text-slate-600",
+    badge: "bg-slate-50 ring-slate-600/10",
+  },
+};
+
+const KPI_COLOR: Record<string, string> = {
+  positive: "text-emerald-600",
+  info: "text-sky-600",
+  warning: "text-amber-600",
+  danger: "text-red-600",
+  muted: "text-slate-500",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function ProyectoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -70,7 +98,6 @@ export default function ProyectoDetailPage() {
     );
 
     async function load() {
-      // project
       const { data: proj, error: projErr } = await supabase
         .from("proyectos")
         .select(
@@ -85,7 +112,6 @@ export default function ProyectoDetailPage() {
       }
       setProject(proj);
 
-      // tasks
       const { data: tareasData, error: tareasErr } = await supabase
         .from("tareas")
         .select(
@@ -98,26 +124,12 @@ export default function ProyectoDetailPage() {
         setError(tareasErr.message);
         return;
       }
-      //if (!tareasData?.length) return;
 
-      // dependencies
       const tareaIds = tareasData.map((t) => t.id);
       const { data: depsData } = await supabase
         .from("dependencias_tareas")
         .select("tarea_id, depende_de_tarea_id")
         .in("tarea_id", tareaIds);
-
-      /*setTasks(
-        tareasData.map((t) => ({
-          id: t.id,
-          titulo: t.titulo,
-          tarea_padre_id: t.tarea_padre_id,
-          fecha_inicio_planificada: t.fecha_inicio_planificada,
-          fecha_fin_planificada: t.fecha_fin_planificada,
-          estado: t.estado ?? "Pendiente",
-          porcentaje_avance_actual: t.porcentaje_avance_actual ?? 0,
-        })),
-      );*/
 
       setTasks(
         (tareasData ?? []).map((t) => ({
@@ -146,39 +158,20 @@ export default function ProyectoDetailPage() {
 
   if (authLoading || loading)
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          color: "var(--color-text-tertiary)",
-          fontSize: 13,
-          fontFamily: "monospace",
-        }}
-      >
+      <div className="flex items-center justify-center h-screen text-sm text-slate-400">
         Cargando proyecto...
       </div>
     );
 
   if (error || !project)
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          gap: 12,
-        }}
-      >
-        <p style={{ color: "var(--color-text-danger)", fontSize: 13 }}>
+      <div className="flex flex-col items-center justify-center h-screen gap-3">
+        <p className="text-sm text-red-600">
           {error ?? "Proyecto no encontrado"}
         </p>
         <Link
           href="/dashboard/proyectos"
-          style={{ fontSize: 12, color: "var(--color-text-info)" }}
+          className="text-xs text-sky-600 hover:underline"
         >
           ← Volver a proyectos
         </Link>
@@ -197,19 +190,19 @@ export default function ProyectoDetailPage() {
   const duracionTotal =
     project.fecha_inicio_planificada && project.fecha_fin_planificada
       ? diffDays(
-        project.fecha_inicio_planificada,
-        project.fecha_fin_planificada,
-      )
+          project.fecha_inicio_planificada,
+          project.fecha_fin_planificada,
+        )
       : null;
 
   const diasTranscurridos = project.fecha_inicio_planificada
     ? Math.max(
-      0,
-      diffDays(
-        project.fecha_inicio_planificada,
-        new Date().toISOString().slice(0, 10),
-      ),
-    )
+        0,
+        diffDays(
+          project.fecha_inicio_planificada,
+          new Date().toISOString().slice(0, 10),
+        ),
+      )
     : null;
 
   const pctTiempo =
@@ -217,183 +210,104 @@ export default function ProyectoDetailPage() {
       ? Math.min(100, Math.round((diasTranscurridos / duracionTotal) * 100))
       : null;
 
-  const statusColor = STATUS_COLORS[project.estado] ?? "#555";
+  const statusStyle = STATUS_STYLES[project.estado] ?? STATUS_STYLES.Finalizado;
+  const desviacion = pctTiempo !== null ? pctFisico - pctTiempo : null;
+
+  const kpis = [
+    {
+      label: "Avance físico",
+      value: `${pctFisico}%`,
+      color: KPI_COLOR.positive,
+    },
+    {
+      label: "Tiempo",
+      value: pctTiempo !== null ? `${pctTiempo}%` : "—",
+      color: KPI_COLOR.info,
+    },
+    {
+      label: "Desviación",
+      value:
+        desviacion !== null
+          ? `${desviacion > 0 ? "+" : ""}${desviacion}%`
+          : "—",
+      color:
+        desviacion !== null && desviacion >= 0
+          ? KPI_COLOR.positive
+          : KPI_COLOR.danger,
+    },
+    { label: "Tareas activas", value: `${enCurso}`, color: KPI_COLOR.warning },
+    { label: "Bloqueadas", value: `${bloqueadas}`, color: KPI_COLOR.danger },
+    {
+      label: "Completadas",
+      value: `${completadas} / ${totalTareas}`,
+      color: KPI_COLOR.muted,
+    },
+  ];
 
   // ── JSX ──────────────────────────────────────────────────────────────────
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        background: "var(--color-background-tertiary)",
-        fontFamily: "var(--font-mono, 'Courier New', monospace)",
-        overflow: "hidden",
-      }}
-    >
-      {/* ── top nav ─────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "8px 20px",
-          borderBottom: "0.5px solid var(--color-border-secondary)",
-          background: "var(--color-background-primary)",
-          flexShrink: 0,
-        }}
-      >
+    <div className="flex flex-col h-screen bg-slate-50 overflow-hidden">
+      {/* top nav */}
+      <div className="flex items-center gap-2 px-5 py-2.5 border-b border-slate-200 bg-white shrink-0">
         <Link
           href="/dashboard/proyectos"
-          style={{
-            fontSize: 11,
-            color: "var(--color-text-tertiary)",
-            textDecoration: "none",
-          }}
+          className="text-xs text-slate-400 hover:text-slate-600 transition-colors no-underline"
         >
-          ← proyectos
+          ← Proyectos
         </Link>
-        <span style={{ color: "var(--color-border-secondary)" }}>/</span>
-        <span
-          style={{
-            fontSize: 11,
-            color: "var(--color-text-secondary)",
-            maxWidth: 300,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
+        <span className="text-slate-300">/</span>
+        <span className="text-xs text-slate-600 truncate max-w-xs">
           {project.nombre}
         </span>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+        <div className="ml-auto">
           <Link
             href={`/dashboard/proyectos/${id}/editar`}
-            style={{
-              fontSize: 10,
-              padding: "4px 10px",
-              border: "0.5px solid var(--color-border-secondary)",
-              borderRadius: 5,
-              color: "var(--color-text-secondary)",
-              textDecoration: "none",
-              background: "var(--color-background-secondary)",
-            }}
+            className="text-xs px-3 py-1 border border-slate-200 rounded-md bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors no-underline"
           >
-            editar
+            Editar
           </Link>
         </div>
       </div>
 
-      {/* ── body ────────────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-        {/* ── left: main content ──────────────────────────────────────── */}
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            minWidth: 0,
-          }}
-        >
+      {/* body */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* main content */}
+        <div className="flex flex-col flex-1 overflow-hidden min-w-0">
           {/* project header */}
-          <div
-            style={{
-              padding: "20px 24px 16px",
-              borderBottom: "0.5px solid var(--color-border-secondary)",
-              background: "var(--color-background-primary)",
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                marginBottom: 12,
-              }}
-            >
+          <div className="px-6 pt-5 pb-4 border-b border-slate-200 bg-white shrink-0">
+            <div className="flex items-start justify-between mb-4">
               <div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    marginBottom: 4,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background: statusColor,
-                    }}
-                  />
+                {/* status badge */}
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className={`w-2 h-2 rounded-full ${statusStyle.dot}`} />
                   <span
-                    style={{
-                      fontSize: 10,
-                      letterSpacing: "0.08em",
-                      color: statusColor,
-                      fontWeight: 500,
-                    }}
+                    className={`text-xs font-semibold tracking-wide ${statusStyle.text}`}
                   >
-                    {project.estado.toUpperCase()}
+                    {project.estado}
                   </span>
                 </div>
-                <h1
-                  style={{
-                    fontSize: 22,
-                    fontWeight: 600,
-                    color: "var(--color-text-primary)",
-                    margin: 0,
-                    lineHeight: 1.2,
-                  }}
-                >
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">
                   {project.nombre}
                 </h1>
                 {project.descripcion && (
-                  <p
-                    style={{
-                      fontSize: 11,
-                      color: "var(--color-text-tertiary)",
-                      margin: "4px 0 0",
-                    }}
-                  >
+                  <p className="text-xs text-slate-400 mt-1">
                     {project.descripcion}
                   </p>
                 )}
               </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <p
-                  style={{
-                    fontSize: 9,
-                    color: "var(--color-text-tertiary)",
-                    margin: 0,
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  PERIODO
+
+              {/* date range */}
+              <div className="text-right shrink-0">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                  Periodo
                 </p>
-                <p
-                  style={{
-                    fontSize: 11,
-                    color: "var(--color-text-secondary)",
-                    margin: "2px 0 0",
-                  }}
-                >
+                <p className="text-xs text-slate-600">
                   {fmtDate(project.fecha_inicio_planificada)} →{" "}
                   {fmtDate(project.fecha_fin_planificada)}
                 </p>
                 {duracionTotal && (
-                  <p
-                    style={{
-                      fontSize: 10,
-                      color: "var(--color-text-tertiary)",
-                      margin: "2px 0 0",
-                    }}
-                  >
+                  <p className="text-xs text-slate-400 mt-0.5">
                     {duracionTotal} días
                   </p>
                 )}
@@ -401,58 +315,14 @@ export default function ProyectoDetailPage() {
             </div>
 
             {/* KPI strip */}
-            <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-              {[
-                {
-                  label: "AVANCE FÍSICO",
-                  value: `${pctFisico}%`,
-                  color: "#1D9E75",
-                },
-                {
-                  label: "TIEMPO",
-                  value: pctTiempo !== null ? `${pctTiempo}%` : "—",
-                  color: "#378ADD",
-                },
-                {
-                  label: "DESVIACIÓN",
-                  value: pctTiempo !== null ? `${pctFisico - pctTiempo}%` : "—",
-                  color: pctFisico >= (pctTiempo ?? 0) ? "#1D9E75" : "#993C1D",
-                },
-                {
-                  label: "TAREAS ACTIVAS",
-                  value: `${enCurso}`,
-                  color: "#BA7517",
-                },
-                {
-                  label: "BLOQUEADAS",
-                  value: `${bloqueadas}`,
-                  color: "#993C1D",
-                },
-                {
-                  label: "COMPLETADAS",
-                  value: `${completadas} / ${totalTareas}`,
-                  color: "var(--color-text-tertiary)",
-                },
-              ].map((kpi) => (
+            <div className="flex gap-6 flex-wrap">
+              {kpis.map((kpi) => (
                 <div key={kpi.label}>
-                  <p
-                    style={{
-                      fontSize: 9,
-                      letterSpacing: "0.08em",
-                      color: "var(--color-text-tertiary)",
-                      margin: 0,
-                    }}
-                  >
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">
                     {kpi.label}
                   </p>
                   <p
-                    style={{
-                      fontSize: 18,
-                      fontWeight: 600,
-                      color: kpi.color,
-                      margin: "2px 0 0",
-                      letterSpacing: "-0.01em",
-                    }}
+                    className={`text-xl font-black tracking-tight ${kpi.color}`}
                   >
                     {kpi.value}
                   </p>
@@ -462,13 +332,7 @@ export default function ProyectoDetailPage() {
           </div>
 
           {/* timeline */}
-          <div
-            style={{
-              flex: 1,
-              overflow: "hidden",
-              background: "var(--color-background-primary)",
-            }}
-          >
+          <div className="flex-1 overflow-hidden bg-white p-4">
             {tasks.length > 0 ? (
               <ProjectTimeline
                 tasks={tasks}
@@ -476,24 +340,13 @@ export default function ProyectoDetailPage() {
                 projectName={project.nombre}
               />
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  gap: 10,
-                }}
-              >
-                <p
-                  style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}
-                >
+              <div className="flex flex-col items-center justify-center h-full gap-3">
+                <p className="text-sm text-slate-400">
                   No hay tareas importadas.
                 </p>
                 <Link
                   href={`/dashboard/proyectos/${id}/editar`}
-                  style={{ fontSize: 11, color: "var(--color-text-info)" }}
+                  className="text-xs text-sky-600 hover:underline"
                 >
                   Importar tareas →
                 </Link>
@@ -502,107 +355,29 @@ export default function ProyectoDetailPage() {
           </div>
         </div>
 
-        {/* ── right: activity sidebar ─────────────────────────────────── */}
-        <div
-          style={{
-            width: 300,
-            flexShrink: 0,
-            borderLeft: "0.5px solid var(--color-border-secondary)",
-            background: "var(--color-background-primary)",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              padding: "14px 16px",
-              borderBottom: "0.5px solid var(--color-border-secondary)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 500,
-                letterSpacing: "0.08em",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              HISTORIAL DE CONTROL
+        {/* activity sidebar */}
+        <div className="w-72 shrink-0 border-l border-slate-200 bg-white flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 shrink-0">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+              Historial de control
             </span>
-            <span style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
-              ver todos
+            <span className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 transition-colors">
+              Ver todos
             </span>
           </div>
 
-          <div
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              padding: "12px 16px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-            }}
-          >
-            {/* placeholder activity items — replace with real reportes_avance data */}
-            {[
-              {
-                nombre: "Sin actividad reciente",
-                tipo: "—",
-                tiempo: "",
-                descripcion: "Importa tareas y comienza a registrar avances.",
-                color: "#555",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 8,
-                  border: "0.5px solid var(--color-border-secondary)",
-                  background: "var(--color-background-secondary)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 4,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 500,
-                      color: "var(--color-text-primary)",
-                    }}
-                  >
-                    {item.nombre}
-                  </span>
-                  <span
-                    style={{ fontSize: 9, color: "var(--color-text-tertiary)" }}
-                  >
-                    {item.tiempo}
-                  </span>
-                </div>
-                <p
-                  style={{
-                    fontSize: 9,
-                    color: "var(--color-text-tertiary)",
-                    margin: 0,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {item.descripcion}
-                </p>
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+            {/* placeholder — replace with real reportes_avance data */}
+            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-medium text-slate-700">
+                  Sin actividad reciente
+                </span>
               </div>
-            ))}
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Importa tareas y comienza a registrar avances.
+              </p>
+            </div>
           </div>
         </div>
       </div>

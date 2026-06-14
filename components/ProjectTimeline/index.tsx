@@ -20,21 +20,6 @@ import {
 } from "./canvas";
 import { GroupOverlay } from "./GroupOverlay";
 
-// ─── Shared button style ──────────────────────────────────────────────────────
-
-const btnStyle: React.CSSProperties = {
-  fontSize: 10,
-  padding: "3px 8px",
-  border: "0.5px solid var(--color-border-secondary)",
-  borderRadius: 4,
-  background: "var(--color-background-secondary)",
-  color: "var(--color-text-secondary)",
-  cursor: "pointer",
-  fontFamily: "inherit",
-};
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export type { GanttTask } from "./types";
 
 export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
@@ -161,14 +146,13 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
     });
 
     if (expanded) {
-      const branchColorForTags = buildBranchColors(roots);
       drawAncestorTags(
         ctx,
         expanded,
         filtered,
         tasks,
         nodeDepths,
-        branchColorForTags,
+        buildBranchColors(roots),
       );
     }
   }, [
@@ -192,9 +176,10 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
   // ── hit detection ─────────────────────────────────────────────────────────
   function handleCanvasClick(e: React.MouseEvent<HTMLCanvasElement>) {
     const rect = canvasRef.current!.getBoundingClientRect();
-    const my = e.clientY - rect.top;
     const laneI =
-      filtered.length - 1 - Math.floor(my / (LANE_H + LANE_PADDING));
+      filtered.length -
+      1 -
+      Math.floor((e.clientY - rect.top) / (LANE_H + LANE_PADDING));
     if (laneI < 0 || laneI >= filtered.length) {
       setExpanded(null);
       return;
@@ -213,9 +198,10 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
 
   function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     const rect = canvasRef.current!.getBoundingClientRect();
-    const my = e.clientY - rect.top;
     const laneI =
-      filtered.length - 1 - Math.floor(my / (LANE_H + LANE_PADDING));
+      filtered.length -
+      1 -
+      Math.floor((e.clientY - rect.top) / (LANE_H + LANE_PADDING));
     if (laneI < 0 || laneI >= filtered.length) {
       setTooltip((t) => ({ ...t, visible: false }));
       return;
@@ -242,53 +228,19 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
 
   // ── JSX ───────────────────────────────────────────────────────────────────
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        background: "var(--color-background-primary)",
-        fontFamily: "var(--font-mono, 'Courier New', monospace)",
-      }}
-    >
+    <div className="flex flex-col w-full border border-slate-200 rounded-xl overflow-hidden shadow-sm">
       {/* toolbar */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "6px 14px",
-          borderBottom: "0.5px solid var(--color-border-secondary)",
-          flexWrap: "wrap",
-          rowGap: 6,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 500,
-            letterSpacing: "0.07em",
-            color: "var(--color-text-primary)",
-          }}
-        >
-          {projectName ?? "TIMELINE"}
+      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-slate-200 bg-white flex-wrap">
+        <span className="text-xs font-semibold tracking-wide text-slate-800">
+          {projectName ?? "Timeline"}
         </span>
-        <span style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
-          / {tasks.length} tareas · {Math.round(totalDays / 30)} meses
+        <span className="text-xs text-slate-400">
+          · {tasks.length} tareas · {Math.round(totalDays / 30)} meses
         </span>
 
         {/* zoom */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            marginLeft: 8,
-          }}
-        >
-          <span style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
-            zoom
-          </span>
+        <div className="flex items-center gap-1.5 ml-2">
+          <span className="text-xs text-slate-400">zoom</span>
           <input
             type="range"
             min={0.5}
@@ -296,50 +248,25 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
             step={0.1}
             value={zoom}
             onChange={(e) => setZoom(parseFloat(e.target.value))}
-            style={{ width: 80 }}
+            className="w-20"
           />
-          <span
-            style={{
-              fontSize: 10,
-              color: "var(--color-text-secondary)",
-              minWidth: 32,
-            }}
-          >
+          <span className="text-xs text-slate-500 min-w-8">
             {Math.round(zoom * 100)}%
           </span>
         </div>
 
         {/* date window */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            marginLeft: 8,
-          }}
-        >
-          <span style={{ fontSize: 10, color: "var(--color-text-tertiary)" }}>
-            próx.
-          </span>
+        <div className="flex items-center gap-1 ml-2">
+          <span className="text-xs text-slate-400">próx.</span>
           {([30, 60, 90, null] as const).map((d) => (
             <button
               key={d ?? "all"}
               onClick={() => setDayWindow(d)}
-              style={{
-                ...btnStyle,
-                background:
-                  dayWindow === d
-                    ? "var(--color-background-info)"
-                    : "var(--color-background-secondary)",
-                color:
-                  dayWindow === d
-                    ? "var(--color-text-info)"
-                    : "var(--color-text-secondary)",
-                border:
-                  dayWindow === d
-                    ? "0.5px solid var(--color-border-info)"
-                    : "0.5px solid var(--color-border-secondary)",
-              }}
+              className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                dayWindow === d
+                  ? "bg-sky-50 text-sky-700 border-sky-200"
+                  : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+              }`}
             >
               {d === null ? "todo" : `${d}d`}
             </button>
@@ -351,21 +278,11 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
           onClick={() =>
             setStatusFilter((p) => (p === "all" ? "active" : "all"))
           }
-          style={{
-            ...btnStyle,
-            background:
-              statusFilter === "active"
-                ? "var(--color-background-info)"
-                : "var(--color-background-secondary)",
-            color:
-              statusFilter === "active"
-                ? "var(--color-text-info)"
-                : "var(--color-text-secondary)",
-            border:
-              statusFilter === "active"
-                ? "0.5px solid var(--color-border-info)"
-                : "0.5px solid var(--color-border-secondary)",
-          }}
+          className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+            statusFilter === "active"
+              ? "bg-sky-50 text-sky-700 border-sky-200"
+              : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+          }`}
         >
           {statusFilter === "active"
             ? "✓ ocultar completadas"
@@ -373,14 +290,7 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
         </button>
 
         {/* legend */}
-        <div
-          style={{
-            marginLeft: "auto",
-            display: "flex",
-            gap: 10,
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="ml-auto flex gap-3 flex-wrap">
           {[
             { color: "#185FA5", label: "root" },
             { color: "#378ADD", label: "grupo" },
@@ -389,48 +299,39 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
           ].map((l) => (
             <div
               key={l.label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontSize: 10,
-                color: "var(--color-text-tertiary)",
-              }}
+              className="flex items-center gap-1 text-xs text-slate-400"
             >
               <div
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: "50%",
-                  background: l.color,
-                }}
+                className="w-2 h-2 rounded-full"
+                style={{ background: l.color }}
               />
               {l.label}
             </div>
           ))}
         </div>
 
-        <button onClick={() => setCollapsed(new Set())} style={btnStyle}>
+        <button
+          onClick={() => setCollapsed(new Set())}
+          className="text-xs px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors"
+        >
           expand all
         </button>
-        <button onClick={collapseAll} style={btnStyle}>
+        <button
+          onClick={collapseAll}
+          className="text-xs px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors"
+        >
           collapse all
         </button>
       </div>
 
-      {/* canvas wrapper */}
+      {/* canvas wrapper — intentionally dark, isolates the Gantt drawing surface */}
       <div
         ref={wrapRef}
+        className="w-full overflow-x-auto overflow-y-auto max-h-[60vh] relative flex flex-col-reverse"
         style={{
-          width: "100%",
-          overflowX: "auto",
-          overflowY: "auto",
-          maxHeight: "60vh",
-          position: "relative",
-          padding: "0 24px",
+          background: "#0f172a",
+          padding: "12px 24px",
           boxSizing: "border-box",
-          display: "flex",
-          flexDirection: "column-reverse",
         }}
       >
         {W > 0 && (
@@ -439,7 +340,7 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
             onClick={handleCanvasClick}
             onMouseMove={handleMouseMove}
             onMouseLeave={() => setTooltip((t) => ({ ...t, visible: false }))}
-            style={{ display: "block", cursor: "pointer" }}
+            className="block cursor-pointer"
           />
         )}
 
@@ -457,36 +358,13 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
       {/* tooltip */}
       {tooltip.visible && tooltip.task && (
         <div
-          style={{
-            position: "fixed",
-            left: tooltip.x + 12,
-            top: tooltip.y - 8,
-            zIndex: 1000,
-            background: "var(--color-background-primary)",
-            border: "0.5px solid var(--color-border-secondary)",
-            borderRadius: 6,
-            padding: "7px 10px",
-            fontSize: 11,
-            pointerEvents: "none",
-            maxWidth: 220,
-          }}
+          className="fixed z-50 bg-white border border-slate-200 rounded-lg shadow-md px-3 py-2 text-xs pointer-events-none max-w-55"
+          style={{ left: tooltip.x + 12, top: tooltip.y - 8 }}
         >
-          <div
-            style={{
-              fontWeight: 500,
-              marginBottom: 3,
-              color: "var(--color-text-primary)",
-            }}
-          >
+          <div className="font-semibold text-slate-800 mb-1">
             {tooltip.task.titulo}
           </div>
-          <div
-            style={{
-              color: "var(--color-text-secondary)",
-              fontSize: 10,
-              lineHeight: 1.8,
-            }}
-          >
+          <div className="text-slate-500 leading-relaxed">
             <div>
               Inicio:{" "}
               {new Date(
@@ -501,7 +379,11 @@ export default function ProjectTimeline({ tasks, projectName }: GanttProps) {
               Fin:{" "}
               {new Date(tooltip.task.fecha_fin_planificada).toLocaleDateString(
                 "es-CL",
-                { day: "2-digit", month: "short", year: "numeric" },
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                },
               )}
             </div>
             <div>
